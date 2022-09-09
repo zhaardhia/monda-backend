@@ -1,6 +1,7 @@
 "use strict";
 
 const sequelize = require("sequelize");
+const Sequelize = require("sequelize")
 const { Op } = sequelize;
 const { 
 	tunai_users,
@@ -8,27 +9,40 @@ const {
 } = require("../../components/database");
 
 exports.getUidWithNoOss = async () => {
-  return tunai_users.findAll({
+  // return tunai_users.findAll({
+  //   raw: true,
+  //   where: {
+  //     [Op.or] : {
+  //       uimg1: {
+  //         [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
+  //       },
+  //       uimg2: {
+  //         [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
+  //       },
+  //       uimg3: {
+  //         [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
+  //       },
+  //       uimg4: {
+  //         [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
+  //       },
+  //     }
+  //   },
+  //   attributes: ["uid", "ufullname", "uimg1", "uimg2", "uimg3", "uimg4"]
+  // })
+
+  const query = `select tu.uid, tu.ufullname , (case when uimg1 like '%${process.env.OSS_BUCKET}%' then '' else uimg1 end) as uimg1, (case when uimg2 like '%${process.env.OSS_BUCKET}%' then '' else uimg2 end) as uimg2 , (case when uimg3 like '%${process.env.OSS_BUCKET}%' then '' else uimg3 end) uimg3, (case when uimg4 like '%${process.env.OSS_BUCKET}%' then '' else uimg4 end) uimg4 from tunai_user tu`;
+
+  const resultQuery = await db.query(query, {
     raw: true,
-    where: {
-      [Op.or] : {
-        uimg1: {
-          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
-        },
-        uimg2: {
-          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
-        },
-        uimg3: {
-          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
-        },
-        uimg4: {
-          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
-        },
-      }
-    },
-    attributes: ["uid", "ufullname", "uimg1", "uimg2", "uimg3", "uimg4"]
+    type: Sequelize.QueryTypes.SELECT,
   })
+  .then(result => {
+      console.log(result)
+      return result
+  })
+  return resultQuery
 }
+
 
 //uimg1 NOT LIKE 'http%' OR
 // uimg2 NOT LIKE 'http%' OR
