@@ -13,16 +13,16 @@ exports.getUidWithNoOss = async () => {
     where: {
       [Op.or] : {
         uimg1: {
-          [Op.notLike]: 'http%',
+          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
         },
         uimg2: {
-          [Op.notLike]: 'http%',
+          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
         },
         uimg3: {
-          [Op.notLike]: 'http%',
+          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
         },
         uimg4: {
-          [Op.notLike]: 'http%',
+          [Op.notLike]: `%${process.env.OSS_BUCKET}%`,
         },
       }
     },
