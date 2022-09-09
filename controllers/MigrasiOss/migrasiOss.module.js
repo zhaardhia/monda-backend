@@ -2,6 +2,7 @@
 
 const sequelize = require("sequelize");
 const Sequelize = require("sequelize")
+const { db } = require("../../components/database")
 const { Op } = sequelize;
 const { 
 	tunai_users,
