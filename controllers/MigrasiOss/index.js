@@ -93,7 +93,7 @@ exports.migratePhotoOss = async (req, res, next) => {
         propsLog.uimg_new[v] = "Migration failed. Check if the url is valid."
 
         uimg[v] = objPhoto[v]
-        objDataResponse[e.uid].failed += 1;
+        objDataResponse.failed += 1;
       }
       
     }
@@ -110,5 +110,5 @@ exports.migratePhotoOss = async (req, res, next) => {
     objResponse.push(objDataResponse)
   }
 
-  return response.res200(res, '000', 'Success Migrate Photo', objResponse)
+  return response.res200(res, '000', 'Process Migrate Photos Succeed', objResponse)
 }
