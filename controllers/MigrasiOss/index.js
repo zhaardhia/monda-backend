@@ -4,7 +4,9 @@ const response = require("../../components/response")
 const migrasiOssModule = require("./migrasiOss.module")
 const { db } = require("../../components/database")
 const axios = require("axios")
-const AxiosClient = axios.create();
+const AxiosClient = axios.create({
+  timeout: 60000
+});
 const {writeFile, unlink, readFile} = require("fs/promises");
 const { detectMimeType }  = require("../../middlewares/detectMimeType")
 const { uploadFileOSS } = require("../../middlewares/oss")
@@ -25,6 +27,11 @@ exports.migratePhotoOss = async (req, res, next) => {
   if (payload.data === undefined) return response.res400(res, "data is not defined.")
   if (payload.data.length < 1) return response.res400(res, "there is no uid that has been checked.")
 
+  let objResponse = {
+    success: 0, 
+    failed: 0,
+  }
+
   for (const e of payload.data) {
     let objPhoto = e?.photos
     let uimg = {}
@@ -40,6 +47,7 @@ exports.migratePhotoOss = async (req, res, next) => {
     if (e.photos === undefined || e.photos === null) return response.res400(res, "photos is not found.")
 
     for (const v in objPhoto) {
+      console.log(objPhoto[v]);
       let imageBase64;
       if (objPhoto[v].includes("http")) {
         imageBase64 = await AxiosClient.get(objPhoto[v],{
@@ -50,6 +58,7 @@ exports.migratePhotoOss = async (req, res, next) => {
           console.error(error)
         })
       }else {
+        console.log(objPhoto[v]);
         imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
           responseType: "arraybuffer"
         })
@@ -75,11 +84,14 @@ exports.migratePhotoOss = async (req, res, next) => {
         propsLog.uimg_new[v] = urlOss
 
         uimg[v] = urlOss
+
+        objResponse.success += 1;
       }else {
         propsLog.uimg_old[v] = objPhoto[v]
         propsLog.uimg_new[v] = "Migration failed. Check if the url is valid."
 
         uimg[v] = objPhoto[v]
+        objResponse.failed += 1;
       }
       
     }
@@ -95,5 +107,5 @@ exports.migratePhotoOss = async (req, res, next) => {
     }
   }
 
-  return response.res200(res, '000', 'Success Migrate Photo')
+  return response.res200(res, '000', 'Success Migrate Photo', objResponse)
 }
