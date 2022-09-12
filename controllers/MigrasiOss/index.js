@@ -27,10 +27,7 @@ exports.migratePhotoOss = async (req, res, next) => {
   if (payload.data === undefined) return response.res400(res, "data is not defined.")
   if (payload.data.length < 1) return response.res400(res, "there is no uid that has been checked.")
 
-  let objResponse = {
-    success: 0, 
-    failed: 0,
-  }
+  let objResponse = {}
 
   for (const e of payload.data) {
     let objPhoto = e?.photos
@@ -45,6 +42,11 @@ exports.migratePhotoOss = async (req, res, next) => {
 
     if (e.uid === undefined || e.uid === null) return response.res400(res, "uid is not found.")
     if (e.photos === undefined || e.photos === null) return response.res400(res, "photos is not found.")
+
+    objResponse[e.uid] = {
+      success: 0,
+      failed: 0
+    }
 
     for (const v in objPhoto) {
       console.log(objPhoto[v]);
@@ -84,14 +86,13 @@ exports.migratePhotoOss = async (req, res, next) => {
         propsLog.uimg_new[v] = urlOss
 
         uimg[v] = urlOss
-
-        objResponse.success += 1;
+        objResponse[e.uid].success += 1
       }else {
         propsLog.uimg_old[v] = objPhoto[v]
         propsLog.uimg_new[v] = "Migration failed. Check if the url is valid."
 
         uimg[v] = objPhoto[v]
-        objResponse.failed += 1;
+        objResponse[e.uid].failed += 1;
       }
       
     }
