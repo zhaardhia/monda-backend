@@ -83,8 +83,14 @@ exports.migratePhotoOss = async (req, res, next) => {
           // .catch(error => {
           //   console.error(error)
           // })
-          imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
-          console.log(imageBase64)
+          
+          try {
+            imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
+          } catch (error) {
+            console.error(error)
+          }
+          
+          // console.log(imageBase64)
         }
       }
       // console.log(imageBase64)
