@@ -64,8 +64,9 @@ exports.migratePhotoOss = async (req, res, next) => {
       //   })
       // } 
       if (objPhoto[v].includes("https://api.ikimodal.app")) {
+        console.log(objPhoto[v])
         let afterSlice = objPhoto[v].slice(25)
-
+        console.log(afterSlice)
         let flagCheckPhoto = 0;
         try {
           await access(`${process.env.URL_IKIMODAL_PERSONAL}/${afterSlice}`, constants.F_OK);
@@ -85,7 +86,7 @@ exports.migratePhotoOss = async (req, res, next) => {
           }
         }
 
-      }else {
+      }else if (objPhoto[v].startsWith('photo')) {
         console.log(objPhoto[v]);
 
         let flagCheckPhoto = 0;
@@ -115,6 +116,15 @@ exports.migratePhotoOss = async (req, res, next) => {
           
           // console.log(imageBase64)
         }
+
+      }else {
+        imageBase64 = await AxiosClient.get(objPhoto[v],{
+        responseType: "arraybuffer"
+        })
+        .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+        .catch(error => {
+          console.error(error)
+        })
       }
       // console.log(imageBase64)
       
