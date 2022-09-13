@@ -31,7 +31,7 @@ exports.getUidWithNoOss = async () => {
   //   attributes: ["uid", "ufullname", "uimg1", "uimg2", "uimg3", "uimg4"]
   // })
 
-  const query = `select tu.uid, tu.ufullname , (case when uimg1 like '%${process.env.OSS_BUCKET}%' then '' else uimg1 end) as uimg1, (case when uimg2 like '%${process.env.OSS_BUCKET}%' then '' else uimg2 end) as uimg2 , (case when uimg3 like '%${process.env.OSS_BUCKET}%' then '' else uimg3 end) uimg3, (case when uimg4 like '%${process.env.OSS_BUCKET}%' then '' else uimg4 end) uimg4 from tunai_user tu where uimg1 not like '%${process.env.OSS_BUCKET}%' and  uimg2 not like '%${process.env.OSS_BUCKET}%' and uimg3 not like '%${process.env.OSS_BUCKET}%' and  uimg4 not like '%${process.env.OSS_BUCKET}%'`;
+  const query = `select tu.uid, tu.ufullname , (case when uimg1 like '%${process.env.OSS_BUCKET}%' then '' else uimg1 end) as uimg1, (case when uimg2 like '%${process.env.OSS_BUCKET}%' then '' else uimg2 end) as uimg2 , (case when uimg3 like '%${process.env.OSS_BUCKET}%' then '' else uimg3 end) uimg3, (case when uimg4 like '%${process.env.OSS_BUCKET}%' then '' else uimg4 end) uimg4 from tunai_user tu where uimg1 not like '%${process.env.OSS_BUCKET}%' or uimg2 not like '%${process.env.OSS_BUCKET}%' or uimg3 not like '%${process.env.OSS_BUCKET}%' or uimg4 not like '%${process.env.OSS_BUCKET}%'`;
 
   const resultQuery = await db.query(query, {
     raw: true,

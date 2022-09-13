@@ -51,7 +51,7 @@ exports.migratePhotoOss = async (req, res, next) => {
       failed: 0
     }
 
-    for (const v in objPhoto) {
+    for (let v in objPhoto) {
       console.log(objPhoto[v]);
       let imageBase64;
       if (objPhoto[v].includes("http")) {
@@ -62,6 +62,28 @@ exports.migratePhotoOss = async (req, res, next) => {
         .catch(error => {
           console.error(error)
         })
+      } else if (objPhoto[v].includes("https://api.ikimodal.app")) {
+        let afterSlice = objPhoto[v].slice(25)
+
+        let flagCheckPhoto = 0;
+        try {
+          await access(`${process.env.URL_IKIMODAL_PERSONAL}/${afterSlice}`, constants.F_OK);
+          console.log('can access');
+          flagCheckPhoto = 1;
+        } catch (error) {
+          console.error(`cannot access ${process.env.URL_IKIMODAL_PERSONAL}/${afterSlice}`);
+          flagCheckPhoto = 0;
+        }
+
+        if (flagCheckPhoto === 1) {
+
+          try {
+            imageBase64 = await readFile(`${process.env.URL_IKIMODAL_PERSONAL}/${afterSlice}`, {encoding: 'base64'});
+          } catch (error) {
+            console.error(error)
+          }
+        }
+
       }else {
         console.log(objPhoto[v]);
 
@@ -83,7 +105,7 @@ exports.migratePhotoOss = async (req, res, next) => {
           // .catch(error => {
           //   console.error(error)
           // })
-          
+
           try {
             imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
           } catch (error) {
