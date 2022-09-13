@@ -76,13 +76,15 @@ exports.migratePhotoOss = async (req, res, next) => {
         }
 
         if (flagCheckPhoto === 1) {
-          imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
-            responseType: "arraybuffer"
-          })
-          .then(response => Buffer.from(response.data, 'binary').toString('base64'))
-          .catch(error => {
-            console.error(error)
-          })
+          // imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
+          //   responseType: "arraybuffer"
+          // })
+          // .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+          // .catch(error => {
+          //   console.error(error)
+          // })
+          imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
+          console.log(imageBase64)
         }
       }
       // console.log(imageBase64)
