@@ -7,7 +7,9 @@ const axios = require("axios")
 const AxiosClient = axios.create({
   timeout: 60000
 });
-const {writeFile, unlink, readFile} = require("fs/promises");
+const { writeFile, unlink, readFile, access } = require("fs/promises");
+const { constants } = require("fs")
+const fs = require('fs'); 
 const { detectMimeType }  = require("../../middlewares/detectMimeType")
 const { uploadFileOSS } = require("../../middlewares/oss")
 
@@ -62,13 +64,26 @@ exports.migratePhotoOss = async (req, res, next) => {
         })
       }else {
         console.log(objPhoto[v]);
-        imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
-          responseType: "arraybuffer"
-        })
-        .then(response => Buffer.from(response.data, 'binary').toString('base64'))
-        .catch(error => {
-          console.error(error)
-        })
+
+        let flagCheckPhoto = 0;
+        try {
+          await access(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, constants.F_OK);
+          console.log('can access');
+          flagCheckPhoto = 1;
+        } catch (error) {
+          console.error(`cannot access ${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`);
+          flagCheckPhoto = 0;
+        }
+
+        if (flagCheckPhoto === 1) {
+          imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
+            responseType: "arraybuffer"
+          })
+          .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+          .catch(error => {
+            console.error(error)
+          })
+        }
       }
       // console.log(imageBase64)
       
