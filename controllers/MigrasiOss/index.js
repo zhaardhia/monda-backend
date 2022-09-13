@@ -54,15 +54,16 @@ exports.migratePhotoOss = async (req, res, next) => {
     for (let v in objPhoto) {
       console.log(objPhoto[v]);
       let imageBase64;
-      if (objPhoto[v].includes("http")) {
-        imageBase64 = await AxiosClient.get(objPhoto[v],{
-          responseType: "arraybuffer"
-        })
-        .then(response => Buffer.from(response.data, 'binary').toString('base64'))
-        .catch(error => {
-          console.error(error)
-        })
-      } else if (objPhoto[v].includes("https://api.ikimodal.app")) {
+      // if (objPhoto[v].includes("http")) {
+      //   imageBase64 = await AxiosClient.get(objPhoto[v],{
+      //     responseType: "arraybuffer"
+      //   })
+      //   .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+      //   .catch(error => {
+      //     console.error(error)
+      //   })
+      // } 
+      if (objPhoto[v].includes("https://api.ikimodal.app")) {
         let afterSlice = objPhoto[v].slice(25)
 
         let flagCheckPhoto = 0;
