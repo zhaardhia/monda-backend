@@ -90,31 +90,42 @@ exports.migratePhotoOss = async (req, res, next) => {
         console.log(objPhoto[v]);
 
         let flagCheckPhoto = 0;
-        try {
-          await access(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, constants.F_OK);
-          console.log('can access');
-          flagCheckPhoto = 1;
-        } catch (error) {
-          console.error(`cannot access ${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`);
-          flagCheckPhoto = 0;
-        }
 
-        if (flagCheckPhoto === 1) {
-          // imageBase64 = await AxiosClient.get(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`,{
-          //   responseType: "arraybuffer"
-          // })
-          // .then(response => Buffer.from(response.data, 'binary').toString('base64'))
-          // .catch(error => {
-          //   console.error(error)
-          // })
-
+        if (e.utype == '3') {
           try {
-            imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
+            await access(`${process.env.URL_IKIMODAL_KARYAWAN}/borrower/${objPhoto[v]}`, constants.F_OK);
+            console.log('can access');
+            flagCheckPhoto = 1;
           } catch (error) {
-            console.error(error)
+            console.error(`cannot access ${process.env.URL_IKIMODAL_KARYAWAN}/borrower/${objPhoto[v]}`);
+            flagCheckPhoto = 0;
           }
-          
-          // console.log(imageBase64)
+
+          if (flagCheckPhoto === 1) {
+            try {
+              imageBase64 = await readFile(`${process.env.URL_IKIMODAL_KARYAWAN}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
+            } catch (error) {
+              console.error(error)
+            }          
+          }
+
+        } else {
+          try {
+            await access(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, constants.F_OK);
+            console.log('can access');
+            flagCheckPhoto = 1;
+          } catch (error) {
+            console.error(`cannot access ${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`);
+            flagCheckPhoto = 0;
+          }
+
+          if (flagCheckPhoto === 1) {
+            try {
+              imageBase64 = await readFile(`${process.env.URL_IKIMODAL}/borrower/${objPhoto[v]}`, {encoding: 'base64'});
+            } catch (error) {
+              console.error(error)
+            }          
+          }
         }
 
       }else {
