@@ -28,6 +28,7 @@ exports.uploadFileOSS = async (stringFile) => {
       app_identifier: process.env.OSS_APP_IDENTIFIER
   }
 
+  console.log(headersUploadFile)
   // Body
   const paramsUploadFile = {
       bucket: process.env.OSS_BUCKET,
