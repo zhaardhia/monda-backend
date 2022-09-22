@@ -180,18 +180,3 @@ exports.migratePhotoOss = async (req, res, next) => {
 
   return response.res200(res, '000', 'Process Migrate Photos Succeed', objResponse)
 }
-
-// exports.testing = async (req, res, next) => {
-//   let timestamp = 1663828205903;
-//   // let token = `16638282059032BC8BA2E5D8AAD66E11421EDE9BYA`
-//   let token = `16638282059032BC8BA2E5D8AAD66E11421EDE9BYA`
-//   let hashToken = crypto.createHmac('sha256', '27E5352399F685429BE3E796FA157').update(token).digest('hex')
-
-//   const headersUploadFile = {
-//       token: hashToken,
-//       timestamp: 1663828205903,
-//       app_identifier: 'ikimodal-production'
-//   }
-
-//   console.log(headersUploadFile)
-// }

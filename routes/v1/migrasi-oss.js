@@ -27,13 +27,6 @@ router.route("/uid-no-oss")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-// router.route("/test")
-//   .get((req, res, next) => {
-//     migrasiOssController.testing(req, res).catch((error) => {
-//       console.error(error);
-//       return response.res500(res, "Internal system error, please try again later!");
-//     });
-//   })
 
 router.all("*", index);
 
