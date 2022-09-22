@@ -29,6 +29,7 @@ exports.uploadFileOSS = async (stringFile) => {
   }
 
   console.log(headersUploadFile)
+  console.log(`token: ${token}, App Key: ${process.env.OSS_APP_KEY}, Secret Key: ${process.env.OSS_SECRET_KEY}`)
   // Body
   const paramsUploadFile = {
       bucket: process.env.OSS_BUCKET,
