@@ -1,7 +1,7 @@
 {
-  "name": "api-dashboard-oss",
+  "name": "monda-backend",
   "version": "1.0.0",
-  "description": "API for managing dashboard OSS IKI Modal",
+  "description": "API for managing monda ecommerce",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
