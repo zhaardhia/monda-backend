@@ -1,0 +1,31 @@
+GET http://localhost:5000/api/v1/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJxVGtiVEx0Wkd4dWkzVFlsdEV2cHFMT3BNIiwibmFtZSI6ImZpcnpoYSByYW1hZGhhbiIsImVtYWlsIjoiZmlyemhhQGdtYWlsLmNvbSIsImlhdCI6MTY4MjkyMDYzNCwiZXhwIjoxNjgyOTIwNjQ5fQ.sPSxZd2Vb9922v1yQSbp-cZ_xf2DDRiM_Kl9s_sfObo
+
+###
+POST http://localhost:5000/api/v1/user/register-user
+Content-Type: application/json
+
+{
+    "email": "firzha@gmail.com", 
+    "first_name": "firzha", 
+    "last_name": "ramadhan", 
+    "fullname": "firzha ramadhan", 
+    "password": "wakwaw", 
+    "confPassword": "wakwaw", 
+    "role": 1
+}
+
+###
+POST http://localhost:5000/api/v1/user/login-user
+Content-Type: application/json
+
+{
+    "email": "firzha@gmail.com", 
+    "password": "wakwaw"
+}
+
+###
+GET http://localhost:5000/api/v1/user/token
+
+###
+DELETE http://localhost:5000/api/v1/user/logout-user

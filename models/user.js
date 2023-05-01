@@ -1,63 +1,55 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('log_migrationphoto_oss', {
+  return sequelize.define('user', {
     id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    uid: {
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    first_name: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    last_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    fullname: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    address: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    role: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      comment: "0 = admin, 1 = user"
     },
-    datetimetrx: {
+    created_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
-    uimg1_old: {
+    updated_date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    refresh_token: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg2_old: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg3_old: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg4_old: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg1_new: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg2_new: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg3_new: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg4_new: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    uimg_old: {
-      type: DataTypes.JSON,
-      allowNull: true
-    },
-    uimg_new: {
-      type: DataTypes.JSON,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'log_migrationphoto_oss',
+    tableName: 'user',
     timestamps: false,
     indexes: [
       {

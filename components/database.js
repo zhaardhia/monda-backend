@@ -18,11 +18,11 @@ db.authenticate()
   .then(() => console.log(`Connected to database : ${DB_HOST}:${DB_PORT}`))
   .catch(() => console.error(`Unable to connect to the database!`));
 
-const tunai_user = require("../models/tunai_user");
-const log_migrationphoto_oss = require("../models/log_migrationphoto_oss");
+const user = require("../models/user");
+const product = require("../models/product");
 
 module.exports = {
-  tunai_users: tunai_user(db, DataTypes),
-  log_migrationphoto_oss: log_migrationphoto_oss(db, DataTypes),
+  user: user(db, DataTypes),
+  product: product(db, DataTypes),
   db,
 };
