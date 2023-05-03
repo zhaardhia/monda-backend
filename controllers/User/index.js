@@ -73,9 +73,12 @@ exports.login = async (req, res, next) => {
   }
 
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
+    // httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
-    // secure: true
+    // secure: true,
+    // domain: "localhost",
+    // path: "/",
+    // sameSite: "None"
   })
   return response.res200(res, "000", "Login Berhasil.", accessToken)
 }
@@ -83,7 +86,7 @@ exports.login = async (req, res, next) => {
 exports.refreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken, req)
+    console.log(refreshToken)
     if (!refreshToken) return response.res401(res)
 
     const user = await userModule.getRefreshToken(refreshToken);
