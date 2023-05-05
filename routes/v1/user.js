@@ -21,6 +21,14 @@ router.route("/")
     });
   })
 
+router.route("/user-info")
+  .get(verifyToken.verifyToken, (req, res, next) => {
+    userController.getUserById(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.route("/register-user")
   .post((req, res, next) => {
     userController.registerUser(req, res).catch((error) => {

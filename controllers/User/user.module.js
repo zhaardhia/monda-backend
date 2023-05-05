@@ -18,6 +18,16 @@ exports.getAllUserImageInfo = async (uid) => {
   })
 }
 
+exports.getUserById = async (id) => {
+  return user.findOne({
+    raw: true,
+    where: {
+      id
+    },
+    attributes: ["id", "email", "fullname", "first_name", "last_name", "address", "role"]
+  })
+}
+
 exports.registerPassword = async (payload) => {
   return user.create(
     payload

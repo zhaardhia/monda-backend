@@ -13,6 +13,13 @@ exports.getAllUidWithNoOss = async (req, res, next) => {
   return response.res200(res, "000", "Success get all user", resAllUser)
 }
 
+exports.getUserById = async (req, res, next) => {
+  console.log(req.query.id)
+  if (!req.query.id) return response.res400(res, "id is required.")
+  const resUser = await userModule.getUserById(req.query.id)
+  return response.res200(res, "000", "Success get user", resUser)
+}
+
 exports.registerUser = async (req, res, next) => {
   const { email, first_name, last_name, fullname, password, confPassword, role } = req.body
   if (password !== confPassword) return response.res400(res, "Password dan Confirm Password tidak cocok.")
