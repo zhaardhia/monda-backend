@@ -20,9 +20,16 @@ db.authenticate()
 
 const user = require("../models/user");
 const product = require("../models/product");
+const shopping_session = require("../models/shopping_session");
+const cart_item = require("../models/cart_item");
+const courier = require("../models/courier");
+
 
 module.exports = {
   user: user(db, DataTypes),
   product: product(db, DataTypes),
+  shopping_session: shopping_session(db, DataTypes),
+  cart_item: cart_item(db, DataTypes),
+  courier: courier(db, DataTypes),
   db,
 };

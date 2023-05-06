@@ -1,30 +1,22 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('product', {
+  return sequelize.define('cart_item', {
     id: {
       type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    session_id: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    stock: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    image: {
+    product_id: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     created_date: {
       type: DataTypes.DATE,
@@ -36,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'product',
+    tableName: 'cart_item',
     timestamps: false,
     indexes: [
       {

@@ -1,29 +1,25 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('product', {
+  return sequelize.define('shopping_session', {
     id: {
       type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    user_id: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    price: {
+    total_amount: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    stock: {
+    delivery_location: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    courier_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    image: {
-      type: DataTypes.STRING(255),
       allowNull: true
     },
     created_date: {
@@ -36,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'product',
+    tableName: 'shopping_session',
     timestamps: false,
     indexes: [
       {
