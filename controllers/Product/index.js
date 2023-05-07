@@ -2,15 +2,63 @@
 
 const response = require("../../components/response")
 const productModule = require("./product.module")
+const shoppingCartModule = require("../ShoppingCart/shoppingCart.module")
 const { db } = require("../../components/database")
 const bcrypt = require("bcrypt")
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
 
 exports.getAllProducts = async (req, res, next) => {
-  const resProducts = await productModule.getAllProducts();
+  let resProducts = await productModule.getAllProducts();
   if (resProducts.length < 1) return response.res200(res, "001", "Tidak ada product yang tersedia")
-  return response.res200(res, "000", "Berhasil mengembalikan data semua product", resProducts);
+
+  if (!req.query.user_id) {
+    console.log("tes1")
+    for (const product of resProducts) {
+      product.userCart = {
+        id: null,
+        session_id: null,
+        product_id: null,
+        quantity: 0
+      }
+    }
+    return response.res200(res, "000", "Berhasil mengembalikan data semua product", resProducts);
+  } else {
+    console.log("tes2")
+    let resultFinal = []
+    const resShoppingSession = await shoppingCartModule.getUserShoppingSession(req.query.user_id)
+    console.log({resShoppingSession})
+    if (resShoppingSession) {
+      const resCartItem = await shoppingCartModule.getUserCartItem(resShoppingSession.id)
+      console.log(resCartItem)
+      for (const product of resProducts) {
+        const cartItem = resCartItem.find(item => item.session_id === resShoppingSession.id && product.id === item.product_id)
+        resultFinal.push(
+          {
+            ...product,
+            userCart: cartItem ? cartItem : {
+              id: null,
+              session_id: null,
+              product_id: null,
+              quantity: 0
+            }
+          }
+        )
+      }
+      return response.res200(res, "000", "Sukses mengambil data product", resultFinal)
+    } else {
+      for (const product of resProducts) {
+        product.userCart = {
+          id: null,
+          session_id: null,
+          product_id: null,
+          quantity: 0
+        }
+      }
+      console.log({resProducts})
+      return response.res200(res, "000", "Sukses mengambil data product", resProducts)
+    }
+  }
 }
 
 exports.getProductById = async (req, res, next) => {

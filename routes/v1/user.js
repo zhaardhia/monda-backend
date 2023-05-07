@@ -28,6 +28,12 @@ router.route("/user-info")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+  .put(verifyToken.verifyToken, (req, res, next) => {
+    userController.updateUserProfile(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.route("/register-user")
   .post((req, res, next) => {

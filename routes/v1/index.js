@@ -15,6 +15,7 @@ router.all("/connect", (req, res, next) => {
 router.use("/user", require("./user"));
 router.use("/migrasi-oss", require("./migrasi-oss"));
 router.use("/product", require("./product"));
+router.use("/shopping-cart", require("./shopping-cart"));
 router.all('*', index);
 
 module.exports = router;

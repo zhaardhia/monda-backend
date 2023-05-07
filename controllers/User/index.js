@@ -20,6 +20,33 @@ exports.getUserById = async (req, res, next) => {
   return response.res200(res, "000", "Success get user", resUser)
 }
 
+exports.updateUserProfile = async (req, res, next) => {
+  const payload = {
+    email: req.body.email,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    fullname: `${req.body.first_name} ${req.body.last_name}`,
+    address: req.body.address
+  }
+  console.log(req.headers)
+  console.log(req.body)
+
+  if (!req.body.id) return response.res400(res, "ID tidak boleh kosong.")
+  if (!payload.email) return response.res400(res, "Email tidak boleh kosong.")
+  if (!payload.first_name) return response.res400(res, "Nama depan tidak boleh kosong.")
+
+  const dbTransaction = await db.transaction()
+  try {
+    await userModule.updateUserProfile(dbTransaction, payload, req.body.id)
+    dbTransaction.commit()
+    return response.res200(res, "000", "Sukses mengubah data user.")
+  } catch (error) {
+    dbTransaction.rollback()
+    console.error(error)
+    return response.res200(res, "001", "Terjadi kesalahan ketika update data user.")
+  }
+}
+
 exports.registerUser = async (req, res, next) => {
   const { email, first_name, last_name, fullname, password, confPassword, role } = req.body
   if (password !== confPassword) return response.res400(res, "Password dan Confirm Password tidak cocok.")

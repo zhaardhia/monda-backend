@@ -28,6 +28,12 @@ exports.getUserById = async (id) => {
   })
 }
 
+exports.updateUserProfile = async (dbTransaction, payload, id) => {
+  return user.update(
+    payload, { where: { id }, transaction: dbTransaction }
+  )
+}
+
 exports.registerPassword = async (payload) => {
   return user.create(
     payload
