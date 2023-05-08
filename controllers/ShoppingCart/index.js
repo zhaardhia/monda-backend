@@ -126,8 +126,9 @@ exports.minShoppingCart = async (req, res, next) => {
 
       } else if (checkCartItem.quantity === 1) {
         await shoppingCartModule.deleteCartItem(payload.cart_id)
-        const checkAllCartItem = shoppingCartModule.getAllCartWithSessionId(payload.session_id)
-        if (!checkAllCartItem || checkAllCartItem.length < 1) await shoppingCartModule.deleteShoppingSession(payload.session_id)
+        const checkAllCartItem = await shoppingCartModule.getAllCartWithSessionId(payload.session_id)
+        console.log(checkAllCartItem)
+        if (checkAllCartItem.length < 1) await shoppingCartModule.deleteShoppingSession(payload.session_id)
         else await shoppingCartModule.updateTotalAmountShoppingSession(dbTransaction, payload.session_id, checkShoppingSession.total_amount - getStock.price)
       }
       await dbTransaction.commit()
@@ -179,12 +180,3 @@ exports.insertProduct = async (req, res, next) => {
     return response.res200(res, "001", "Terjadi kesalahan ketika insert database.")
   }
 }
-
-/*
-  - E-book
-  - Podcast
-  - Audioboook
-  - Digital Download
-  - Kelas Online
-  - Webinar
-*/
