@@ -131,7 +131,7 @@ exports.getShoppingSessionById = async (user_id) => {
     where: {
       user_id
     },
-    attributes: ["id", "user_id", "total_amount"]
+    attributes: ["id", "user_id", "total_amount", "delivery_location", "courier_id"]
   })
 }
 
@@ -172,5 +172,31 @@ exports.getAllCartWithSessionId = async (session_id) => {
       session_id
     },
     attributes: ["id", "quantity"]
+  })
+}
+
+
+exports.getUserCart = async (user_id) => {
+  const cartAssociate = shopping_session.hasMany(cart_item, {foreignKey: "session_id", sourceKey: "id"})
+  const productAssociate = cart_item.hasOne(product, {foreignKey: "id", sourceKey: "product_id"})
+
+  return shopping_session.findAll({
+    raw: true,
+    include: [
+      {
+        association: cartAssociate,
+        required: false,
+        include: [
+          {
+            association: productAssociate,
+            required: false,
+          }
+        ],
+        attributes: ["id", "session_id", "product_id", "quantity"]
+      },
+    ],
+    where: {
+      user_id
+    }
   })
 }
