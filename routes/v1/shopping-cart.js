@@ -21,6 +21,12 @@ router.route("/")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+  .put((req, res, next) => {
+    shoppingCartController.minShoppingCart(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.route("/insert-product")
 

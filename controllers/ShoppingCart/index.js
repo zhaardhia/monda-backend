@@ -98,34 +98,6 @@ exports.cartItem = async (req, res, next) => {
       return response.res200(res, "001", "Terjadi kesalahan update data shopping session")
     }
   }
-
-  // insert
-  if (req.body.method === "insert") {
-    
-  } else if (req.body.method === "update_plus") {
-    
-
-  } else if (req.body.method === "update_minus") {
-    
-
-  } else if (req.body.method === "delete") {
-    const getQuantity = await shoppingCartModule.getCartItemQuantity(req.body.cart_id) 
-    if (!getQuantity) return response.res400(res, "Product Tidak Terdaftar")
-
-    if (req.body.quantity > 0 ) return response.res200(res, "001", "Wrong Method.")
-
-    try {
-      await shoppingCartModule.deleteCartItem(req.body.cart_id)
-
-      const checkAllCartItem = shoppingCartModule.getAllCartWithSessionId(req.body.session_id)
-      if (!checkAllCartItem) await shoppingCartModule.deleteShoppingSession(req.body.session_id)
-
-      return response.res200(res, "000", "Sukses menghapus cart item");
-    } catch (error) {
-      console.error(error)
-      return response.res200(res, "001", "Terjadi kesalahan ketika menghapus cart item");
-    }
-  }
 }
 
 exports.minShoppingCart = async (req, res, next) => {
@@ -138,43 +110,36 @@ exports.minShoppingCart = async (req, res, next) => {
   const getStock = await shoppingCartModule.getProductById(payload.product_id)
   if (!getStock) return response.res400(res, "Product Tidak Terdaftar")
 
-  if (req.body.quantity + 1 > getStock.stock) return response.res200(res, "001", "Stock habis")
+  // if (req.body.quantity + 1 > getStock.stock) return response.res200(res, "001", "Stock habis")
 
-  payload.session_id = checkShoppingSession.id
-  const checkCartItem = await shoppingCartModule.getCartItemById(payload.session_id, payload.product_id)
+  if (checkShoppingSession) {
+    payload.session_id = checkShoppingSession.id
+    const checkCartItem = await shoppingCartModule.getCartItemById(payload.session_id, payload.product_id)
+    payload.cart_id = checkCartItem.id
 
-  const getQuantity = await shoppingCartModule.getCartItemQuantity(req.body.cart_id)
-  if (!getQuantity) return response.res400(res, "Product Tidak Terdaftar")
+    const dbTransaction = await db.transaction()
+    try {
+      if (checkCartItem.quantity > 1) {
+        await shoppingCartModule.updateQuantityCartItem(dbTransaction, payload.cart_id, payload.session_id, checkCartItem.quantity - 1)
 
-  if (req.body.quantity - 1 >= 0 ) return response.res200(res, "001", "Wrong Method.")
+        await shoppingCartModule.updateTotalAmountShoppingSession(dbTransaction, payload.session_id, checkShoppingSession.total_amount - getStock.price)
 
-  const dbTransaction = await db.transaction()
-  try {
-    await shoppingCartModule.updateQuantityCartItem(dbTransaction, req.body.cart_id, req.body.session_id, req.body.quantity - 1)
-    await dbTransaction.commit()
-  } catch (error) {
-    console.error(error)
-    await dbTransaction.rollback()
-    return response.res200(res, "001", "Terjadi kesalahan update data quantity cart item")
-  }
-
-  const dbTransaction2 = await db.transaction()
-  try {
-    const getTotalAmount = await shoppingCartModule.getUserCartItemPrice(req.body.session_id)
-    console.log(getTotalAmount)
-
-    const totalAmount = getTotalAmount.reduce((accumulator, object) => {
-      return accumulator + object['product.price'] * object.quantity;
-    }, 0);
-
-    await shoppingCartModule.updateTotalAmountShoppingSession(dbTransaction2, req.body.session_id, totalAmount)
-    await dbTransaction2.commit()
-    return response.res200(res, "000", "Sukses update data shopping cart")
-  } catch (error) {
-    console.error(error)
-    await dbTransaction2.rollback()
-    return response.res200(res, "001", "Terjadi kesalahan update data shopping session")
-  }
+      } else if (checkCartItem.quantity === 1) {
+        await shoppingCartModule.deleteCartItem(payload.cart_id)
+        const checkAllCartItem = shoppingCartModule.getAllCartWithSessionId(payload.session_id)
+        if (!checkAllCartItem || checkAllCartItem.length < 1) await shoppingCartModule.deleteShoppingSession(payload.session_id)
+        else await shoppingCartModule.updateTotalAmountShoppingSession(dbTransaction, payload.session_id, checkShoppingSession.total_amount - getStock.price)
+      }
+      await dbTransaction.commit()
+      return response.res200(res, "000", "Sukses mengurangi cart item")
+    } catch (error) {
+      console.error(error)
+      await dbTransaction.rollback()
+      return response.res200(res, "001", "Terjadi kesalahan update data quantity cart item")
+    }
+  } else {
+    return response.res400(res, "Tidak ada cart")
+  }  
 }
 
 exports.getProductById = async (req, res, next) => {
@@ -214,3 +179,12 @@ exports.insertProduct = async (req, res, next) => {
     return response.res200(res, "001", "Terjadi kesalahan ketika insert database.")
   }
 }
+
+/*
+  - E-book
+  - Podcast
+  - Audioboook
+  - Digital Download
+  - Kelas Online
+  - Webinar
+*/
