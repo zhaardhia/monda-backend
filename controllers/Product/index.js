@@ -25,6 +25,7 @@ exports.getAllProducts = async (req, res, next) => {
     return response.res200(res, "000", "Berhasil mengembalikan data semua product", resProducts);
   } else {
     console.log("tes2")
+    console.log(req.query.user_id)
     let resultFinal = []
     const resShoppingSession = await shoppingCartModule.getUserShoppingSession(req.query.user_id)
     console.log({resShoppingSession})

@@ -6,10 +6,10 @@ POST http://localhost:5000/api/v1/user/register-user
 Content-Type: application/json
 
 {
-    "email": "firzha@gmail.com", 
-    "first_name": "firzha", 
-    "last_name": "ramadhan", 
-    "fullname": "firzha ramadhan", 
+    "email": "violla@gmail.com", 
+    "first_name": "violla", 
+    "last_name": "ayang", 
+    "fullname": "violla ayang", 
     "password": "wakwaw", 
     "confPassword": "wakwaw", 
     "role": 1
