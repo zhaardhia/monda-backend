@@ -109,3 +109,31 @@ exports.updateProductStock = async (id, stock) => {
     }
   )
 }
+
+exports.updateStatusOrder = async (id, status_order) => {
+  return order.update(
+    {
+      status_order,
+      updated_date: new Date()
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}
+
+exports.updateResiOrder = async (id, resi) => {
+  return order.update(
+    {
+      resi,
+      updated_date: new Date()
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}

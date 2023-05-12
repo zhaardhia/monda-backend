@@ -21,7 +21,28 @@ router.route("/checkout")
     });
   })
 
+router.route("/verified-payment")
+  .post((req, res, next) => {
+    orderController.verifiedPayment(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
+router.route("/process-to-shipment")
+  .post((req, res, next) => {
+    orderController.processToShipment(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+router.route("/done-order")
+  .post((req, res, next) => {
+    orderController.doneOrder(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 

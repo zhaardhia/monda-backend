@@ -112,3 +112,40 @@ exports.orderProduct = async (req, res, next) => {
     return response.res200(res, "001", "charge payment error", error)
   }
 }
+
+exports.verifiedPayment = async (req, res, next) => {
+  if (!req.body.order_id) return response.res400(res, "required order_id")
+  try {
+    await orderModule.updateStatusOrder(req.body.order_id, "paid_verified")
+    return response.res200(res, "000", "Sukses memverifikasi pembayaran.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal memverifikasi pembayaran. cek sistem / database.")
+  }
+}
+
+exports.processToShipment = async (req, res, next) => {
+  if (!req.body.order_id) return response.res400(res, "required order_id")
+  if (!req.body.resi) return response.res400(res, "required resi")
+
+  try {
+    await orderModule.updateStatusOrder(req.body.order_id, "shipment")
+    await orderModule.updateResiOrder(req.body.order_id, req.body.resi)
+
+    return response.res200(res, "000", "Sukses memproses pengiriman produk.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal memproses pengiriman produk. cek sistem / database.")
+  }
+}
+
+exports.doneOrder = async (req, res, next) => {
+  if (!req.body.order_id) return response.res400(res, "required order_id")
+  try {
+    await orderModule.updateStatusOrder(req.body.order_id, "completed")
+    return response.res200(res, "000", "Order telah selesai dikirim.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal update status order. cek sistem / database.")
+  }
+}
