@@ -1,43 +1,42 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('user', {
+  return sequelize.define('payment_order', {
     id: {
       type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    first_name: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    last_name: {
+    order_id: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    fullname: {
-      type: DataTypes.STRING(255),
-      allowNull: false
+    amount: {
+      type: DataTypes.DECIMAL(10,0),
+      allowNull: true
     },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    phone: {
+    payment_type: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    address: {
+    provider: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    role: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "0 = admin, 1 = user"
+    status: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    va_number: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    expiry_time: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    response_midtrans: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     created_date: {
       type: DataTypes.DATE,
@@ -46,14 +45,10 @@ module.exports = function(sequelize, DataTypes) {
     updated_date: {
       type: DataTypes.DATE,
       allowNull: true
-    },
-    refresh_token: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'user',
+    tableName: 'payment_order',
     timestamps: false,
     indexes: [
       {

@@ -16,6 +16,9 @@ router.use("/user", require("./user"));
 router.use("/migrasi-oss", require("./migrasi-oss"));
 router.use("/product", require("./product"));
 router.use("/shopping-cart", require("./shopping-cart"));
+router.use("/order", require("./order"));
+router.use("/payment", require("./payment"));
+
 router.all('*', index);
 
 module.exports = router;

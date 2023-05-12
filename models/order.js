@@ -1,43 +1,54 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('user', {
+  return sequelize.define('order', {
     id: {
       type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: false
+    order_no: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
-    first_name: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    last_name: {
+    user_id: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    fullname: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    phone: {
-      type: DataTypes.STRING(255),
+    gross_amount: {
+      type: DataTypes.DECIMAL(10,0),
       allowNull: true
     },
     address: {
+      type: DataTypes.STRING(1000),
+      allowNull: true
+    },
+    courier: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    role: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "0 = admin, 1 = user"
+    resi: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    status_order: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    delivery_fee: {
+      type: DataTypes.DECIMAL(10,0),
+      allowNull: true
+    },
+    transfer_fee: {
+      type: DataTypes.DECIMAL(10,0),
+      allowNull: true
+    },
+    verify_order_date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    shipment_order_date: {
+      type: DataTypes.DATE,
+      allowNull: true
     },
     created_date: {
       type: DataTypes.DATE,
@@ -46,14 +57,10 @@ module.exports = function(sequelize, DataTypes) {
     updated_date: {
       type: DataTypes.DATE,
       allowNull: true
-    },
-    refresh_token: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'user',
+    tableName: 'order',
     timestamps: false,
     indexes: [
       {
