@@ -6,6 +6,7 @@ const { db } = require("../../components/database")
 const bcrypt = require("bcrypt")
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
+const { validationEmail } = require("../../middlewares/validator")
 
 exports.getAllUidWithNoOss = async (req, res, next) => {
   const resAllUser = await userModule.getAllUserImageInfo()
@@ -48,8 +49,18 @@ exports.updateUserProfile = async (req, res, next) => {
 }
 
 exports.registerUser = async (req, res, next) => {
-  const { email, first_name, last_name, fullname, password, confPassword, role } = req.body
+  const { email, phone, first_name, last_name, fullname, password, confPassword, role } = req.body
+  if (!first_name) return response.res400(res, "Nama depan wajib diisi.")
+  if (!last_name) return response.res400(res, "Nama belakang wajib diisi.")
+  if (!email) return response.res400(res, "Email wajib diisi.")
+  if (!validationEmail(email)) return response.res400(res, "Email harus valid.")
+  if (!phone) return response.res400(res, "Nomor telepon / whatsapp wajib diisi.")
+  if (!password) return response.res400(res, "Password wajib diisi.")
+  if (password.length < 6) return response.res400(res, "Password harus berisi 6 karakter atau lebih.")
   if (password !== confPassword) return response.res400(res, "Password dan Confirm Password tidak cocok.")
+
+  const checkEmail = await userModule.getUserByEmail(email);
+  if (checkEmail) return response.res400(res, "Email sudah terdaftar")
 
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
@@ -58,7 +69,8 @@ exports.registerUser = async (req, res, next) => {
     id: nanoid(25),
     email,
     first_name,
-    last_name, 
+    last_name,
+    phone,
     fullname, 
     password: hashPassword,
     role
