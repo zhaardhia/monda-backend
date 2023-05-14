@@ -44,6 +44,21 @@ router.route("/done-order")
     });
   })
 
+router.route("/list-order")
+  .get((req, res, next) => {
+    orderController.userListOrder(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+router.route("/order-detail")
+  .get((req, res, next) => {
+    orderController.userOrderDetail(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.all("*", index);
 
 module.exports = router;

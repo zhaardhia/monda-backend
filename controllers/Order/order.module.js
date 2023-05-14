@@ -137,3 +137,30 @@ exports.updateResiOrder = async (id, resi) => {
     }
   )
 }
+
+exports.getListOrderByUserId = async (user_id) => {
+  return order.findAll({
+    raw: true,
+    where: {
+      user_id    
+    }
+  })
+}
+
+exports.getOrderByUserId = async (id) => {
+  return order.findOne({
+    raw: true,
+    where: {
+      id
+    }
+  })
+}
+
+exports.getOrderDetailByOrderId = async (order_id) => {
+  return order_item.findAll({
+    raw: true,
+    where: {
+      order_id
+    }
+  })
+}

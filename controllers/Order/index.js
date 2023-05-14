@@ -149,3 +149,26 @@ exports.doneOrder = async (req, res, next) => {
     return response.res200(res, "001", "Gagal update status order. cek sistem / database.")
   }
 }
+
+exports.userListOrder = async (req, res, next) => {
+  if (!req.query.user_id) return response.res400(res, "user_id required.")
+  const resListOrder = await orderModule.getListOrderByUserId(req.query.user_id)
+
+  if (resListOrder.length < 1) return response.res200(res, "001", "Order masih kosong.")
+  return response.res200(res, "000", "Sukses mengembalikan data list order", resListOrder)
+}
+
+exports.userOrderDetail = async (req, res, next) => {
+  if (!req.query.order_id) return response.res400(res, "order_id required.")
+  const resOrder = await orderModule.getOrderByUserId(req.query.order_id)
+
+  if (!resOrder) return response.res200(res, "001", "Order masih kosong.")
+
+  const resOrderDetail = await orderModule.getOrderDetailByOrderId(req.query.order_id)
+  const responseOrderDetail = {
+    ...resOrder,
+    order_detail: resOrderDetail
+  }
+
+  return response.res200(res, "000", "Sukses mengembalikan data list order", responseOrderDetail)
+}

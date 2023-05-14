@@ -111,11 +111,12 @@ exports.login = async (req, res, next) => {
   const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: '1d'
   })
-
+  console.log({ refreshToken })
   try {
     await userModule.updateRefreshToken(userId, refreshToken)
   } catch (error) {
     console.error(error)
+    return response.res400(res, "failed update token")
   }
 
   res.cookie('refreshToken', refreshToken, {
@@ -133,9 +134,11 @@ exports.refreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     console.log(refreshToken)
+    console.log("WKKW")
     if (!refreshToken) return response.res401(res)
-
+    console.log("WKKW2")
     const user = await userModule.getRefreshToken(refreshToken);
+    console.log(user)
     if (!user[0]) return response.res401(res);
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded) => {
@@ -155,11 +158,11 @@ exports.refreshToken = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken, req)
-    if (!refreshToken) return response.res200("001", "No content")
+    console.log(refreshToken, req.cookies)
+    if (!refreshToken) return response.res200(res, "001", "No content")
 
     const user = await userModule.getRefreshToken(refreshToken);
-    if (!user[0]) return response.res200("001", "No content")
+    if (!user[0]) return response.res200(res, "001", "No content")
 
     const userId = user[0].id
 
