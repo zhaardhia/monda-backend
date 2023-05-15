@@ -18,6 +18,7 @@ router.use("/product", require("./product"));
 router.use("/shopping-cart", require("./shopping-cart"));
 router.use("/order", require("./order"));
 router.use("/payment", require("./payment"));
+router.use("/courier", require("./courier"));
 
 router.all('*', index);
 

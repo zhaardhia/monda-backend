@@ -16,3 +16,9 @@ exports.getCourierById = async (id) => {
     },
   })
 }
+
+exports.getAllCourier = async () => {
+  return courier.findAll({
+    raw: true,
+  })
+}

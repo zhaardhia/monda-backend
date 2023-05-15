@@ -45,6 +45,22 @@ router.route("/user-cart")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+router.route("/update-delivery-location")
+  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  .put((req, res, next) => {
+    shoppingCartController.updateDeliveryLocation(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+router.route("/update-courier")
+  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  .put((req, res, next) => {
+    shoppingCartController.updateCourierShoppingSession(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.route("/insert-product")
 

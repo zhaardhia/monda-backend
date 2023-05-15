@@ -210,3 +210,29 @@ exports.getUserCart = async (user_id) => {
     }
   })
 }
+
+exports.updateDeliveryLocation = async (id, address) => {
+  return shopping_session.update(
+    {
+      delivery_location: address
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}
+
+exports.updateCourier = async (id, courier_id) => {
+  return shopping_session.update(
+    {
+      courier_id
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}

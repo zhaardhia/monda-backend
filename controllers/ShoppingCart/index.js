@@ -189,3 +189,29 @@ exports.getUserCart = async (req, res, next) => {
   // console.log(response);
   return response.res200(res, "000", "Sukses mengambil seluruh data cart pada user", responseCart)
 }
+
+exports.updateDeliveryLocation = async (req, res, next) => {
+  if (!req.body.id) return response.res200(res, "001", "shopping session id is required")
+  if (!req.body.address) return response.res200(res, "001", "address is required")
+
+  try {
+    await shoppingCartModule.updateDeliveryLocation(req.body.id, req.body.address)
+    return response.res200(res, "000", "Sukses update delivery location")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal update delivery location.")
+  }
+}
+
+exports.updateCourierShoppingSession = async (req, res, next) => {
+  if (!req.body.id) return response.res200(res, "001", "shopping session id is required")
+  if (!req.body.courier_id) return response.res200(res, "001", "courier is required")
+
+  try {
+    await shoppingCartModule.updateCourier(req.body.id, req.body.courier_id)
+    return response.res200(res, "000", "Sukses update kurir")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal update kurir.")
+  }
+} 

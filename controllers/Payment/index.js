@@ -165,3 +165,17 @@ exports.checkStatusPayment = async (req, res, next) => {
       return response.res400(res, "Error charge payment / inserting payment data to database.")
     });;
 }
+
+exports.getPaymentOrderById = async (req, res, next) => {
+  if (!req.query.order_id) return response.res400(res, "order_id required.")
+
+  const resPaymentOrder = await payment_order.findOne({
+    raw: true,
+    where: {
+      order_id: req.query.order_id
+    },
+    attributes: ["order_id", "amount", "payment_type", "provider", "status", "va_number", "expiry_time", "updated_date"]
+  })
+  if (!resPaymentOrder) response.res200(res, "001", "Payment order tidak ditemukan");
+  return response.res200(res, "000", "Sukses mengambil data payment order", resPaymentOrder)
+}

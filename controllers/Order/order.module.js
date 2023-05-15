@@ -11,7 +11,8 @@ const {
     order,
     order_item,
     courier,
-    user
+    user,
+    payment_order
 } = require("../../components/database");
 
 exports.getShoppingSessionToOrder = async (user_id) => {
@@ -148,8 +149,16 @@ exports.getListOrderByUserId = async (user_id) => {
 }
 
 exports.getOrderByUserId = async (id) => {
+  const paymentAssociate = order_item.hasOne(payment_order, {foreignKey: "order_id", sourceKey: "id"})
   return order.findOne({
     raw: true,
+    include: [
+      {
+        association: paymentAssociate,
+        required: false,
+        attributes: ["id", "order_id", "provider"]
+      }
+    ],
     where: {
       id
     }
@@ -157,8 +166,16 @@ exports.getOrderByUserId = async (id) => {
 }
 
 exports.getOrderDetailByOrderId = async (order_id) => {
+  const productAssociate = order_item.hasOne(product, {foreignKey: "id", sourceKey: "product_id"})
   return order_item.findAll({
     raw: true,
+    include: [
+      {
+        association: productAssociate,
+        required: false,
+        attributes: ["id", "name"]
+      }
+    ],
     where: {
       order_id
     }

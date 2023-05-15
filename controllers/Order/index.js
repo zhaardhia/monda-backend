@@ -160,6 +160,7 @@ exports.userListOrder = async (req, res, next) => {
 
 exports.userOrderDetail = async (req, res, next) => {
   if (!req.query.order_id) return response.res400(res, "order_id required.")
+  console.log(req.query.order_id)
   const resOrder = await orderModule.getOrderByUserId(req.query.order_id)
 
   if (!resOrder) return response.res200(res, "001", "Order masih kosong.")

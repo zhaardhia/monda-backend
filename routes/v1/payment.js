@@ -34,7 +34,13 @@ router.route("/check-status")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-
+router.route("/get-payment-order")
+  .get((req, res, next) => {
+    paymentController.getPaymentOrderById(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 
