@@ -101,7 +101,8 @@ exports.orderProduct = async (req, res, next) => {
       await orderModule.deleteCartItem(recapShopSession.id)
       await orderModule.deleteShoppingSession(recapShopSession.id)
       
-      const { statusCode, message, data } = chargePayment
+      const { statusCode, message, data } = chargePayment.data
+      console.log({statusCode}, {message}, {data})
       return response.res200(res, statusCode, message, data)
     } catch (error) {
       console.error(error)
