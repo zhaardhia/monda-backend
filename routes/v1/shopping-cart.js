@@ -28,6 +28,15 @@ router.route("/")
     });
   })
 
+router.route("/get-user-address")
+  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  .get((req, res, next) => {
+    shoppingCartController.getUserAddress(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.route("/delete-cart-item")
   //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
   .put((req, res, next) => {

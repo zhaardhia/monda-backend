@@ -27,15 +27,20 @@ exports.updateUserProfile = async (req, res, next) => {
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     fullname: `${req.body.first_name} ${req.body.last_name}`,
-    address: req.body.address
+    address: req.body.address,
+    phone: req.body.phone,
+    city: req.body.city,
+    postal_code: req.body.postal_code
   }
   console.log(req.headers)
   console.log(req.body)
 
   if (!req.body.id) return response.res400(res, "ID tidak boleh kosong.")
   if (!payload.email) return response.res400(res, "Email tidak boleh kosong.")
+  if (!validationEmail(payload.email)) return response.res400(res, "Email harus valid.")
   if (!payload.first_name) return response.res400(res, "Nama depan tidak boleh kosong.")
-
+  if (!payload.phone) return response.res400(res, "Nomor telepon / whatsapp tidak boleh kosong.")
+  if (payload.address && (!payload.city || !payload.postal_code)) response.res400(res, "Kota & kode pos wajib diisi jika alamat sudah diisi.")
   const dbTransaction = await db.transaction()
   try {
     await userModule.updateUserProfile(dbTransaction, payload, req.body.id)

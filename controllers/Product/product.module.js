@@ -15,6 +15,11 @@ exports.insertProduct = async (payload) => {
 exports.getAllProducts = async () => {
   return product.findAll({
     raw: true,
+    where: {
+      stock: {
+        [Op.gt]: 0
+      }
+    }
   })
 }
 

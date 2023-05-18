@@ -24,16 +24,19 @@ exports.orderProduct = async (req, res, next) => {
     payment_type: req.body.payment_type,
     provider: req.body.provider
   }
+  if (!payload.provider) return response.res400(res, "Pilih bank transfer sebelum melakukan proses checkout.")
 
   const recapShopSession = await orderModule.getShoppingSessionToOrder(payload.user_id);
   if (!recapShopSession) return response.res400(res, "no cart.")
+  if (!recapShopSession.delivery_location || !recapShopSession.city || !recapShopSession.postal_code) return response.res400(res, "Alamat Pengiriman Harus Lengkap.")
+  if (!recapShopSession.courier_id) return response.res400(res, "Kurir harus dipilih terlebih dahulu.")
 
   const resUser = await orderModule.getUserTransaction(recapShopSession.user_id)
   const recapUserItem = await orderModule.getCartItemToOrder(recapShopSession.id)
   console.log(recapUserItem)
 
   for (const item of recapUserItem) {
-    if (item.quantity > item['product.stock']) return response.res200(res, "001", `Stock tidak cukup pada produk ${item["product.name"]}`)
+    if (item.quantity > item['product.stock']) return response.res400(res, `Stock tidak cukup pada produk ${item["product.name"]}`)
   }
 
   const dbTransactionOrder = await db.transaction()
@@ -44,7 +47,7 @@ exports.orderProduct = async (req, res, next) => {
     const payloadOrder = {
       transaction: dbTransactionOrder,
       id: orderId,
-      order_no: orderNumber.length < 1 ? 1 : orderNumber.order_no + 1,
+      order_no: orderNumber.length < 1 ? 1 : orderNumber[0].order_no + 1,
       user_id: recapShopSession.user_id,
       gross_amount: recapShopSession.total_amount,
       address: recapShopSession.delivery_location,

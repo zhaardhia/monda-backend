@@ -166,6 +166,64 @@ exports.checkStatusPayment = async (req, res, next) => {
     });;
 }
 
+exports.cancelPayment = async (req, res, next) => {
+  coreApi.transaction.cancel(req.query.transaction_id)
+    .then(async (statusResponse)=>{
+      console.log({ statusResponse })
+      let orderId = statusResponse.order_id;
+      let transactionStatus = statusResponse.transaction_status;
+      let fraudStatus = statusResponse.fraud_status;
+
+      console.log(`Transaction canceled. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`);
+
+      await payment_order.update(
+        {
+          status: transactionStatus,
+          response_midtrans: JSON.stringify(statusResponse),
+          updated_date: new Date()
+        },
+        {
+          where: {
+            id: statusResponse.transaction_id
+          }
+        }
+      )
+
+      if (transactionStatus == 'settlement') {
+        await order.update(
+          {
+            status_order: "paid_unverified",
+            response_midtrans: JSON.stringify(statusResponse),
+            updated_date: new Date()
+          },
+          {
+            where: {
+              id: statusResponse.order_id
+            }
+          }
+        )
+      } else if (transactionStatus == 'cancel' || transactionStatus == 'expire'){
+        await order.update(
+          {
+            status_order: `${transactionStatus}_payment`,   //  possible: cancel_payment || expire_payment
+            updated_date: new Date()
+          },
+          {
+            where: {
+              id: statusResponse.order_id
+            }
+          }
+        )
+      }
+      
+      return response.res200(res, statusResponse.status_code, "Sukses membatalkan transaksi.", statusResponse)
+    })
+    .catch((e)=>{
+      console.log('Error occured:',e.message);
+      return response.res400(res, "Error charge payment / inserting payment data to database.")
+    });;
+}
+
 exports.getPaymentOrderById = async (req, res, next) => {
   if (!req.query.order_id) return response.res400(res, "order_id required.")
 
@@ -174,7 +232,7 @@ exports.getPaymentOrderById = async (req, res, next) => {
     where: {
       order_id: req.query.order_id
     },
-    attributes: ["order_id", "amount", "payment_type", "provider", "status", "va_number", "expiry_time", "updated_date"]
+    attributes: ["id", "order_id", "amount", "payment_type", "provider", "status", "va_number", "expiry_time", "updated_date"]
   })
   if (!resPaymentOrder) response.res200(res, "001", "Payment order tidak ditemukan");
   return response.res200(res, "000", "Sukses mengambil data payment order", resPaymentOrder)

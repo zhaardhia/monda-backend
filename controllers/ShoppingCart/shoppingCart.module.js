@@ -211,10 +211,12 @@ exports.getUserCart = async (user_id) => {
   })
 }
 
-exports.updateDeliveryLocation = async (id, address) => {
+exports.updateDeliveryLocation = async (id, address, city, postal_code) => {
   return shopping_session.update(
     {
-      delivery_location: address
+      delivery_location: address,
+      city,
+      postal_code
     },
     {
       where: {
@@ -235,4 +237,14 @@ exports.updateCourier = async (id, courier_id) => {
       }
     }
   )
+}
+
+exports.getUserAddress = async (id) => {
+  return user.findOne({
+    raw: true,
+    where: {
+      id
+    },
+    attributes: ["id", "address", "city", "postal_code"]
+  })
 }

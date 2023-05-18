@@ -183,6 +183,8 @@ exports.getUserCart = async (req, res, next) => {
     user_id: resUserCart[0].user_id,
     total_amount: resUserCart[0].total_amount,
     delivery_location: resUserCart[0].delivery_location,
+    city: resUserCart[0].city,
+    postal_code: resUserCart[0].postal_code,
     courier_id: resUserCart[0].courier_id,
     user_cart: resUserCart
   }
@@ -190,12 +192,24 @@ exports.getUserCart = async (req, res, next) => {
   return response.res200(res, "000", "Sukses mengambil seluruh data cart pada user", responseCart)
 }
 
-exports.updateDeliveryLocation = async (req, res, next) => {
-  if (!req.body.id) return response.res200(res, "001", "shopping session id is required")
-  if (!req.body.address) return response.res200(res, "001", "address is required")
+exports.getUserAddress = async (req, res, next) => {
+  if (!req.query.id) return response.res400(res, "Id is required.")
 
+  const resAddress = await shoppingCartModule.getUserAddress(req.query.id)
+
+  if (!resAddress) return response.res400(res, "user tidak ditemukan.")
+  
+  response.res200(res, "000", "Sukses mengambil data user", resAddress)
+}
+
+exports.updateDeliveryLocation = async (req, res, next) => {
+  console.log(req.body)
+  if (!req.body.id) return response.res400(res, "shopping session id is required")
+  if (!req.body.address) return response.res400(res, "Alamat harus diisi.")
+  if (!req.body.city) return response.res400(res, "Kota harus diisi.")
+  if (!req.body.postal_code) return response.res400(res, "Kode pos harus diisi.")
   try {
-    await shoppingCartModule.updateDeliveryLocation(req.body.id, req.body.address)
+    await shoppingCartModule.updateDeliveryLocation(req.body.id, req.body.address, req.body.city, req.body.postal_code)
     return response.res200(res, "000", "Sukses update delivery location")
   } catch (error) {
     console.error(error)
@@ -205,10 +219,11 @@ exports.updateDeliveryLocation = async (req, res, next) => {
 
 exports.updateCourierShoppingSession = async (req, res, next) => {
   if (!req.body.id) return response.res200(res, "001", "shopping session id is required")
-  if (!req.body.courier_id) return response.res200(res, "001", "courier is required")
+  // if (!req.body.courier_id) return response.res200(res, "001", "courier is required")
 
   try {
-    await shoppingCartModule.updateCourier(req.body.id, req.body.courier_id)
+    if (req.body.courier_id) await shoppingCartModule.updateCourier(req.body.id, req.body.courier_id)
+    else await shoppingCartModule.updateCourier(req.body.id, null)
     return response.res200(res, "000", "Sukses update kurir")
   } catch (error) {
     console.error(error)

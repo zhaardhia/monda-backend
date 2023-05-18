@@ -24,7 +24,7 @@ exports.getUserById = async (id) => {
     where: {
       id
     },
-    attributes: ["id", "email", "fullname", "first_name", "last_name", "address", "role"]
+    attributes: ["id", "email", "fullname", "first_name", "last_name", "address", "city", "postal_code", "phone", "role"]
   })
 }
 
