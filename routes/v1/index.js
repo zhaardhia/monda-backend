@@ -13,6 +13,9 @@ router.all("/connect", (req, res, next) => {
 
 // router.all('/', index);
 router.use("/user", require("./user"));
+router.use("/user-admin", require("./user-admin"));
+router.use("/product-admin", require("./product-admin"));
+router.use("/order-admin", require("./order-admin"));
 router.use("/migrasi-oss", require("./migrasi-oss"));
 router.use("/product", require("./product"));
 router.use("/shopping-cart", require("./shopping-cart"));

@@ -1,60 +1,22 @@
 "use strict";
 
 const response = require("../../components/response")
-const userModule = require("./user.module")
+const userAdminModule = require("./user.module")
 const { db } = require("../../components/database")
 const bcrypt = require("bcrypt")
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middlewares/validator")
 
-exports.getAllUidWithNoOss = async (req, res, next) => {
-  const resAllUser = await userModule.getAllUserImageInfo()
-  // if (resAllUser.length < 1) return response.res400(res, "")
-  return response.res200(res, "000", "Success get all user", resAllUser)
-}
 
 exports.getUserById = async (req, res, next) => {
   console.log(req.query.id)
   if (!req.query.id) return response.res400(res, "id is required.")
-  const resUser = await userModule.getUserById(req.query.id)
+  const resUser = await userAdminModule.getUserById(req.query.id)
   return response.res200(res, "000", "Success get user", resUser)
 }
 
-exports.updateUserProfile = async (req, res, next) => {
-  const payload = {
-    email: req.body.email,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    fullname: `${req.body.first_name} ${req.body.last_name}`,
-    address: req.body.address,
-    phone: req.body.phone,
-    city: req.body.city,
-    postal_code: req.body.postal_code,
-    updated_date: new Date()
-  }
-  console.log(req.headers)
-  console.log(req.body)
-
-  if (!req.body.id) return response.res400(res, "ID tidak boleh kosong.")
-  if (!payload.email) return response.res400(res, "Email tidak boleh kosong.")
-  if (!validationEmail(payload.email)) return response.res400(res, "Email harus valid.")
-  if (!payload.first_name) return response.res400(res, "Nama depan tidak boleh kosong.")
-  if (!payload.phone) return response.res400(res, "Nomor telepon / whatsapp tidak boleh kosong.")
-  if (payload.address && (!payload.city || !payload.postal_code)) response.res400(res, "Kota & kode pos wajib diisi jika alamat sudah diisi.")
-  const dbTransaction = await db.transaction()
-  try {
-    await userModule.updateUserProfile(dbTransaction, payload, req.body.id)
-    dbTransaction.commit()
-    return response.res200(res, "000", "Sukses mengubah data user.")
-  } catch (error) {
-    dbTransaction.rollback()
-    console.error(error)
-    return response.res200(res, "001", "Terjadi kesalahan ketika update data user.")
-  }
-}
-
-exports.registerUser = async (req, res, next) => {
+exports.registerUserAdmin = async (req, res, next) => {
   const { email, phone, first_name, last_name, fullname, password, confPassword, role } = req.body
   if (!first_name) return response.res400(res, "Nama depan wajib diisi.")
   if (!last_name) return response.res400(res, "Nama belakang wajib diisi.")
@@ -65,7 +27,7 @@ exports.registerUser = async (req, res, next) => {
   if (password.length < 6) return response.res400(res, "Password harus berisi 6 karakter atau lebih.")
   if (password !== confPassword) return response.res400(res, "Password dan Confirm Password tidak cocok.")
 
-  const checkEmail = await userModule.getUserByEmail(email);
+  const checkEmail = await userAdminModule.getUserByEmail(email);
   if (checkEmail) return response.res400(res, "Email sudah terdaftar")
 
   const salt = await bcrypt.genSalt();
@@ -79,13 +41,11 @@ exports.registerUser = async (req, res, next) => {
     phone,
     fullname, 
     password: hashPassword,
-    role: 1,
-    created_date: new Date(),
-    updated_date: new Date()
+    role: 0
   }
   console.log(payload)
   try {
-    await userModule.registerPassword(payload)
+    await userAdminModule.registerPassword(payload)
     return response.res200(res, "000", "Register Berhasil.")
   } catch (error) {
     console.error(error)
@@ -93,7 +53,7 @@ exports.registerUser = async (req, res, next) => {
   }
 }
 
-exports.login = async (req, res, next) => {
+exports.loginAdmin = async (req, res, next) => {
   const payload = {
     email: req.body.email,
     password: req.body.password
@@ -102,9 +62,9 @@ exports.login = async (req, res, next) => {
   if (!payload.email) return response.res400(res, "Email harus diisi.")
   if (!payload.password) return response.res400(res, "Password harus diisi.")
   
-  const user = await userModule.getUserByEmail(payload.email);
+  const user = await userAdminModule.getUserByEmail(payload.email);
   if (!user) return response.res200(res, "001", "Email tidak ditemukan.");
-  if (user.role !== 1) return response.res401(res);
+  if (user.role !== 0) return response.res401(res);
 
   const match = await bcrypt.compare(payload.password, user.password)
   if (!match) return response.res200(res, "001", "Password salah.")
@@ -112,22 +72,22 @@ exports.login = async (req, res, next) => {
   const userId = user.id
   const name = user.fullname
   const email = user.email
-  const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+  const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_ADMIN, {
     expiresIn: '20s'
   })
 
-  const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET_ADMIN, {
     expiresIn: '1d'
   })
   console.log({ refreshToken })
   try {
-    await userModule.updateRefreshToken(userId, refreshToken)
+    await userAdminModule.updateRefreshToken(userId, refreshToken)
   } catch (error) {
     console.error(error)
     return response.res400(res, "failed update token")
   }
 
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie('refreshTokenAdmin', refreshToken, {
     // httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     // secure: true,
@@ -140,19 +100,20 @@ exports.login = async (req, res, next) => {
 
 exports.refreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshTokenAdmin;
     console.log(refreshToken)
     console.log("WKKW")
     if (!refreshToken) return response.res401(res)
     console.log("WKKW2")
-    const user = await userModule.getRefreshToken(refreshToken);
+    const user = await userAdminModule.getRefreshToken(refreshToken);
     console.log(user)
     if (!user[0]) return response.res401(res);
-
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded) => {
+    // if (!user[0].role !== 0) return response.res401(res);
+    console.log("WKWKBLEEE")
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_ADMIN, (error, decoded) => {
       if (error) return response.res401(res)
       const { id: userId, email, fullname: name } = user[0]
-      const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+      const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_ADMIN, {
         expiresIn: '15s'
       })
 
@@ -163,22 +124,28 @@ exports.refreshToken = async (req, res, next) => {
   }
 }
 
-exports.logout = async (req, res, next) => {
+exports.logoutAdmin = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshTokenAdmin;
     console.log(refreshToken, req.cookies)
     if (!refreshToken) return response.res200(res, "001", "No content")
 
-    const user = await userModule.getRefreshToken(refreshToken);
+    const user = await userAdminModule.getRefreshToken(refreshToken);
     if (!user[0]) return response.res200(res, "001", "No content")
 
     const userId = user[0].id
 
-    await userModule.updateRefreshToken(userId, null)
+    await userAdminModule.updateRefreshToken(userId, null)
     
-    res.clearCookie('refreshToken')
+    res.clearCookie('refreshTokenAdmin')
     return response.res200(res, "000", "Berhasil Logout.")
   } catch (error) {
     console.error(error)
   }
+}
+
+exports.getLatestUser = async (req, res, next) => {
+  const resUser = await userAdminModule.getLatestUser()
+  if (resUser.length < 1) return response.res400(res, "User belum ada.")
+  return response.res200(res, "000", "Sukses mengambil data user yang baru terdaftar di Monta Kitchen", resUser)
 }

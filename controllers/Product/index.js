@@ -71,12 +71,14 @@ exports.getProductById = async (req, res, next) => {
 }
 
 exports.insertProduct = async (req, res, next) => {
+  if (!req.file) return response.res400(res, "Image harus diupload.")
+
   let payload = {
     name: req.body.name,
     price: +req.body.price,
     stock: +req.body.stock,
     description: req.body.description,
-    image: req.body.image
+    image: req.file.path
   }
 
   if (!payload.name) return response.res400(res, "Nama produk harus diisi.")
@@ -91,6 +93,36 @@ exports.insertProduct = async (req, res, next) => {
     payload.updated_date = new Date()
 
     await productModule.insertProduct(payload)
+    dbTransaction.commit()
+    return response.res200(res, "000", "Sukses insert produk baru")
+  } catch (error) {
+    console.error(error)
+    dbTransaction.rollback()
+    return response.res200(res, "001", "Terjadi kesalahan ketika insert database.")
+  }
+}
+
+exports.updateProduct = async (req, res, next) => {
+  if (!req.file) return response.res400(res, "Image harus diupload.")
+
+  let payload = {
+    name: req.body.name,
+    price: +req.body.price,
+    stock: +req.body.stock,
+    description: req.body.description,
+    image: req.file.path
+  }
+  if (!req.body.id) return response.res400(res, "ID produk harus diisi.")
+  if (!payload.name) return response.res400(res, "Nama produk harus diisi.")
+  if (!payload.price) return response.res400(res, "Harga produk harus diisi dan tidak boleh 0.")
+  if (payload.stock === undefined || payload.stock === null) return response.res400(res, "Stock produk harus diisi.")
+  if (!payload.description) return response.res400(res, "Deskripsi produk harus diisi.")
+
+  const dbTransaction = await db.transaction()
+  try {
+    payload.updated_date = new Date()
+
+    await productModule.updateProduct(dbTransaction, payload, req.body.id)
     dbTransaction.commit()
     return response.res200(res, "000", "Sukses insert produk baru")
   } catch (error) {

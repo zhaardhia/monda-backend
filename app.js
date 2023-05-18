@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const multer = require("multer")
+const path = require("path")
 const app = express();
 const morganBody = require("morgan-body");
 const routes = require("./routes");
@@ -16,6 +18,23 @@ const corsOptions = {
 app.use(cors(corsOptions))
 // app.use(cors({ credentials: true, origin: 'www' }))
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images')
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + '-' + file.originalname)
+  }
+})
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+}
+app.use('/images', express.static(path.join(__dirname, 'images')))
 morganBody(app);
 app.use((error, req, res, next) => {
   return error instanceof SyntaxError
@@ -23,6 +42,7 @@ app.use((error, req, res, next) => {
     : next();
 });
 app.use(cookieParser())
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
 app.disable("x-powered-by");
 app.use(routes);
 
