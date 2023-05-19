@@ -124,7 +124,7 @@ exports.updateProduct = async (req, res, next) => {
 
     await productModule.updateProduct(dbTransaction, payload, req.body.id)
     dbTransaction.commit()
-    return response.res200(res, "000", "Sukses insert produk baru")
+    return response.res200(res, "000", "Sukses update produk.")
   } catch (error) {
     console.error(error)
     dbTransaction.rollback()

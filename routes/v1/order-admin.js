@@ -22,17 +22,44 @@ const index = function (req, res, next) {
 //   })
 
 router.route("/latest-transaction")
-  // .get(verifyTokenAdmin, (req, res, next) => {
-  .get((req, res, next) => {
+  .get(verifyTokenAdmin, (req, res, next) => {
+  // .get((req, res, next) => {
     orderAdminController.getLatestTransaction(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
 router.route("/this-month-income")
-  // .get(verifyTokenAdmin, (req, res, next) => {
-  .get((req, res, next) => {
+  .get(verifyTokenAdmin, (req, res, next) => {
+  // .get((req, res, next) => {
     orderAdminController.getThisMonthsIncome(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/list-order")
+  .get(verifyTokenAdmin, (req, res, next) => {
+  // .get((req, res, next) => {
+    orderAdminController.getListOrder(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/order-detail")
+  .get(verifyTokenAdmin, (req, res, next) => {
+  // .get((req, res, next) => {
+    orderAdminController.userOrderDetail(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/list-order-shipment")
+  .get(verifyTokenAdmin, (req, res, next) => {
+  // .get((req, res, next) => {
+    orderAdminController.getListOrderShipment(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });

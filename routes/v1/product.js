@@ -20,14 +20,15 @@ router.route("/")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .post((req, res, next) => {
+  .post(verifyToken.verifyTokenAdmin, (req, res, next) => { // use this to activate middleware for session user login
+  // .post((req, res, next) => {
     productController.insertProduct(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  .put((req, res, next) => {
+  .put(verifyToken.verifyTokenAdmin, (req, res, next) => {
+  // .put((req, res, next) => {
     productController.updateProduct(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");

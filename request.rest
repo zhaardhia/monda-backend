@@ -29,3 +29,19 @@ GET http://localhost:5000/api/v1/user/token
 
 ###
 DELETE http://localhost:5000/api/v1/user/logout-user
+
+// admin
+###
+POST http://localhost:5000/api/v1/user-admin/register-admin
+Content-Type: application/json
+
+{
+    "email": "tokomondakitchen@gmail.com", 
+    "first_name": "Monda", 
+    "last_name": "Kitchen",
+    "phone": "08551498798",
+    "fullname": "violla ayang", 
+    "password": "Danitra06", 
+    "confPassword": "Danitra06", 
+    "role": 0
+}

@@ -142,6 +142,9 @@ exports.updateResiOrder = async (id, resi) => {
 exports.getListOrderByUserId = async (user_id) => {
   return order.findAll({
     raw: true,
+    order: [
+      ['created_date', 'DESC'],
+    ],
     where: {
       user_id    
     }

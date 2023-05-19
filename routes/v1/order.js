@@ -14,7 +14,8 @@ const index = function (req, res, next) {
 };
 
 router.route("/checkout")
-  .post((req, res, next) => {
+  .post(verifyToken.verifyToken, (req, res, next) => {
+  // .post((req, res, next) => {
     orderController.orderProduct(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -22,7 +23,8 @@ router.route("/checkout")
   })
 
 router.route("/verified-payment")
-  .post((req, res, next) => {
+  .post(verifyToken.verifyTokenAdmin, (req, res, next) => {
+  // .post((req, res, next) => {
     orderController.verifiedPayment(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -30,14 +32,16 @@ router.route("/verified-payment")
   })
 
 router.route("/process-to-shipment")
-  .post((req, res, next) => {
+  .post(verifyToken.verifyTokenAdmin, (req, res, next) => {
+  // .post((req, res, next) => {
     orderController.processToShipment(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
 router.route("/done-order")
-  .post((req, res, next) => {
+  .post(verifyToken.verifyToken, (req, res, next) => {
+  // .post((req, res, next) => {
     orderController.doneOrder(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -45,14 +49,16 @@ router.route("/done-order")
   })
 
 router.route("/list-order")
-  .get((req, res, next) => {
+  .get(verifyToken.verifyToken, (req, res, next) => { // activate middleware
+  // .get((req, res, next) => {
     orderController.userListOrder(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
 router.route("/order-detail")
-  .get((req, res, next) => {
+  .get(verifyToken.verifyToken, (req, res, next) => { // activate middleware
+  // .get((req, res, next) => {
     orderController.userOrderDetail(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");

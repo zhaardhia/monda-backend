@@ -14,14 +14,15 @@ const index = function (req, res, next) {
 };
 
 router.route("/")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .post((req, res, next) => {
+  .post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .post((req, res, next) => {
     shoppingCartController.cartItem(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  .put((req, res, next) => {
+  .put(verifyToken.verifyToken, (req, res, next) => {
+  // .put((req, res, next) => {
     shoppingCartController.minShoppingCart(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -29,8 +30,8 @@ router.route("/")
   })
 
 router.route("/get-user-address")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .get((req, res, next) => {
+  .get(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .get((req, res, next) => {
     shoppingCartController.getUserAddress(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -38,8 +39,8 @@ router.route("/get-user-address")
   })
 
 router.route("/delete-cart-item")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .put((req, res, next) => {
+  .put(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .put((req, res, next) => {
     shoppingCartController.removeSpecificCartItem(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
@@ -47,24 +48,24 @@ router.route("/delete-cart-item")
   })
 
 router.route("/user-cart")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .get((req, res, next) => {
+  .get(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .get((req, res, next) => {
     shoppingCartController.getUserCart(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
 router.route("/update-delivery-location")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .put((req, res, next) => {
+  .put(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .put((req, res, next) => {
     shoppingCartController.updateDeliveryLocation(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
 router.route("/update-courier")
-  //.post(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
-  .put((req, res, next) => {
+  .put(verifyToken.verifyToken, (req, res, next) => { // use this to activate middleware for session user login
+  // .put((req, res, next) => {
     shoppingCartController.updateCourierShoppingSession(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
