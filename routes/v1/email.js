@@ -3,30 +3,30 @@ const cache = apicache.middleware;
 const response = require("../../components/response");
 const { body, param, query, validationResult } = require("express-validator");
 const validator = require("../../middlewares/validator");
+const verifyToken = require("../../middlewares/verifyToken")
 const express = require("express");
 const router = express.Router();
 
-const migrasiOssController = require("../../controllers/MigrasiOss");
+const emailModule = require("../../controllers/Email");
 
 const index = function (req, res, next) {
   response.res404(res);
 };
 
-router.route("/")
-  .put((req, res, next) => {
-    migrasiOssController.migratePhotoOss(req, res).catch((error) => {
-      console.error(error);
-      return response.res500(res, "Internal system error, please try again later!");
-    });
-  })
-
-router.route("/uid-no-oss")
+router.route("/forgot-password")
   .get((req, res, next) => {
-    migrasiOssController.getAllUidWithNoOss(req, res).catch((error) => {
+    emailModule.forgotPassEmail(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+// router.route("/")
+//   .get((req, res, next) => {
+//     courierModule.getAllCourier(req, res).catch((error) => {
+//       console.error(error);
+//       return response.res500(res, "Internal system error, please try again later!");
+//     });
+//   })
 
 router.all("*", index);
 

@@ -19,9 +19,11 @@ exports.getLatestTransaction = async (req, res, next) => {
 }
 
 exports.getThisMonthsIncome = async (req, res, next) => {
-  const resTransaction = await orderAdminModule.getThisMonthsIncome(moment().subtract(1, 'months'), new Date())
-  if (resTransaction.length < 1) return response.res400(res, "Transaksi tidak ditemukan")
+  const resTransaction = await orderAdminModule.getThisMonthsIncome(moment().subtract(30, 'days'), moment(new Date()).subtract(0, 'days'))
+  console.log("TANGGALL:", moment(new Date()).subtract(1, 'months'), new Date())
   console.log(resTransaction, " WKKWKWKW")
+
+  if (resTransaction.length < 1) return response.res400(res, "Transaksi tidak ditemukan")
 
   const filter1to5 = resTransaction.filter((data) => {
     return new Date(data.created_date).getTime() >= new Date(moment().subtract(29, 'days').format("YYYY-MM-DD")).getTime() 
@@ -29,13 +31,13 @@ exports.getThisMonthsIncome = async (req, res, next) => {
   })
 
   const filter6to10 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(24, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(20, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(24, 'days').format("YYYY-MM-DD")).getTime() 
+      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(20, 'days').format("YYYY-MM-DD")).getTime()
   })
 
   const filter11to15 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(19, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(15, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(19, 'days').format("YYYY-MM-DD")).getTime() 
+      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(15, 'days').format("YYYY-MM-DD")).getTime()
   })
 
   const filter16to20 = resTransaction.filter((data) => {
@@ -44,13 +46,13 @@ exports.getThisMonthsIncome = async (req, res, next) => {
   })
 
   const filter21to25 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(9, 'days').format("YYYY-MM-DD")).getTime() 
+    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(9, 'days').format("YYYY-MM-DD")).getTime() 
       && new Date(data.created_date).getTime() <= new Date(moment().subtract(5, 'days').format("YYYY-MM-DD")).getTime()
   })
 
   const filter26to30 = resTransaction.filter((data) => {
     return new Date(data.created_date).getTime() >= new Date(moment().subtract(4, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(0, 'days').format("YYYY-MM-DD")).getTime()
+      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(0, 'days').format("YYYY-MM-DD")).getTime()
   })
 
   console.log({filter21to25}, {filter26to30})
@@ -125,7 +127,10 @@ exports.userOrderDetail = async (req, res, next) => {
 }
 
 exports.getListOrder = async (req, res, next) => {
-  const resOrder = await orderAdminModule.getListOrder()
+  const status_order = req.query.status_order;
+  const orderBy = [req.query.order, req.query.orderType ?? "DESC"]
+
+  const resOrder = await orderAdminModule.getListOrder(status_order, orderBy)
   if (resOrder.length < 1) return response.res400(res, "Belum ada transaksi masuk")
   return response.res200(res, "000", "Sukses mengambil data semua transaksi.", resOrder)
 }

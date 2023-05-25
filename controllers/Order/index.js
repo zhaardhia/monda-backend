@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt")
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
 const midtransClient = require('midtrans-client');
+const { orderCreated } = require("../../libs/email")
 
 // Create Core API instance
 // const coreApi = new midtransClient.CoreApi({
@@ -52,7 +53,7 @@ exports.orderProduct = async (req, res, next) => {
       gross_amount: recapShopSession.total_amount,
       address: recapShopSession.delivery_location,
       courier: orderCourier.name,
-      status_order: "not_paid",
+      status_order: "waiting_charge_callback",
       delivery_fee: orderCourier.fee,
       transfer_fee: 5000, // HARDCODED,
       created_date: new Date(),
@@ -96,8 +97,8 @@ exports.orderProduct = async (req, res, next) => {
     let chargePayment;
 
     try {
-      chargePayment = await axios.post('http://127.0.0.1:5000/api/v1/payment/charge', payloadCharge);
-      
+      chargePayment = await axios.post(`${process.env.THIS_SERVICE_HOST}/api/v1/payment/charge`, payloadCharge);
+      console.log({chargePayment})
       for (const userItem of recapUserItem) {
         await orderModule.updateProductStock(userItem['product.id'], userItem['product.stock'] - userItem.quantity)
       }
@@ -106,6 +107,9 @@ exports.orderProduct = async (req, res, next) => {
       
       const { statusCode, message, data } = chargePayment.data
       console.log({statusCode}, {message}, {data})
+
+      orderCreated(resUser.email, data.order_id, "order_created")
+
       return response.res200(res, statusCode, message, data)
     } catch (error) {
       console.error(error)
@@ -156,7 +160,10 @@ exports.doneOrder = async (req, res, next) => {
 
 exports.userListOrder = async (req, res, next) => {
   if (!req.query.user_id) return response.res400(res, "user_id required.")
-  const resListOrder = await orderModule.getListOrderByUserId(req.query.user_id)
+  const status_order = req.query.status_order;
+  const orderBy = [req.query.order, req.query.orderType ?? "DESC"]
+
+  const resListOrder = await orderModule.getListOrderByUserId(req.query.user_id, status_order, orderBy)
 
   if (resListOrder.length < 1) return response.res200(res, "001", "Order masih kosong.")
   return response.res200(res, "000", "Sukses mengembalikan data list order", resListOrder)

@@ -139,15 +139,24 @@ exports.updateResiOrder = async (id, resi) => {
   )
 }
 
-exports.getListOrderByUserId = async (user_id) => {
+exports.getListOrderByUserId = async (user_id, status_order, orderBy) => {
+  let whereClause = {
+    user_id,
+  }
+  let orderClause = []
+
+  if (status_order) whereClause.status_order = status_order
+  console.log(orderBy)
+  if (orderBy[0] && orderBy[1] && orderBy.length > 1) orderClause.push(orderBy)
+  else orderClause.push(['created_date', 'DESC'])
+  console.log(whereClause)
   return order.findAll({
     raw: true,
-    order: [
-      ['created_date', 'DESC'],
-    ],
-    where: {
-      user_id    
-    }
+    // order: [
+    //   ['created_date', 'DESC'],
+    // ],
+    order: orderClause,
+    where: whereClause
   })
 }
 

@@ -159,7 +159,7 @@ exports.removeSpecificCartItem = async (req, res, next) => {
     await shoppingCartModule.deleteCartItem(payload.cart_item_id)
     const checkAllCartItem = await shoppingCartModule.getUserCartItem(payload.shopping_session_id)
     console.log(checkAllCartItem)
-    const sumPrice = checkAllCartItem?.reduce((accumulator, object) => {
+    const sumPrice = checkAllCartItem.reduce((accumulator, object) => {
       return accumulator + object['product.price'] * object.quantity;
     }, 0);
     if (checkAllCartItem.length < 1) await shoppingCartModule.deleteShoppingSession(payload.shopping_session_id)

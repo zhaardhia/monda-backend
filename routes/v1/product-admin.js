@@ -22,8 +22,8 @@ const index = function (req, res, next) {
 //   })
 
 router.route("/best-sellers")
-  .get(verifyTokenAdmin, (req, res, next) => {
-  // .get((req, res, next) => {
+  // .get(verifyTokenAdmin, (req, res, next) => {
+  .get((req, res, next) => {
     productAdminController.getThreeBestSellerProduct(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");

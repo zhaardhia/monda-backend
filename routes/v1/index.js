@@ -16,12 +16,12 @@ router.use("/user", require("./user"));
 router.use("/user-admin", require("./user-admin"));
 router.use("/product-admin", require("./product-admin"));
 router.use("/order-admin", require("./order-admin"));
-router.use("/migrasi-oss", require("./migrasi-oss"));
 router.use("/product", require("./product"));
 router.use("/shopping-cart", require("./shopping-cart"));
 router.use("/order", require("./order"));
 router.use("/payment", require("./payment"));
 router.use("/courier", require("./courier"));
+router.use("/email", require("./email"));
 
 router.all('*', index);
 

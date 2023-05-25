@@ -36,6 +36,9 @@ exports.getThisMonthsIncome = async (from, to) => {
     where: {
       created_date: {
         [Op.between] : [from, to]
+      },
+      status_order: {
+        [Op.or] : ["paid_verified", "shipment", "completed"]
       }
     }
   })
@@ -81,13 +84,22 @@ exports.getOrderDetailByOrderId = async (order_id) => {
   })
 }
 
-exports.getListOrder = async () => {
+exports.getListOrder = async (status_order, orderBy) => {
   const userAssociate = order.hasOne(user, {foreignKey: "id", sourceKey: "user_id"})
+
+  let whereClause = {}
+  let orderClause = []
+
+  if (status_order) whereClause.status_order = status_order
+  console.log(orderBy)
+  if (orderBy[0] && orderBy[1] && orderBy.length > 1) orderClause.push(orderBy)
+  else orderClause.push(['created_date', 'DESC'])
+  console.log(whereClause)
+
   return order.findAll({
     raw: true,
-    order: [
-      ['created_date', 'DESC'],
-    ],    
+    order: orderClause,
+    where: whereClause,
     include: [
       {
         association: userAssociate,
