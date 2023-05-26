@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt")
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middlewares/validator")
-
+const { forgotPass } = require("../../libs/email")
 exports.getAllUidWithNoOss = async (req, res, next) => {
   const resAllUser = await userModule.getAllUserImageInfo()
   // if (resAllUser.length < 1) return response.res400(res, "")
@@ -90,6 +90,47 @@ exports.registerUser = async (req, res, next) => {
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Register Gagal. Mohon cek kembali data user yang dibuat.")
+  }
+}
+
+exports.sendEmailAddressForgotPass = async (req, res, next) => {
+  if (!req.body.email) return response.res400(res, "Email harus terisi.")
+  if (!validationEmail(req.body.email)) return response.res400(res, "Email harus valid.")
+
+  const checkEmail = await userModule.getUserByEmail(req.body.email);
+  if (!checkEmail) return response.res400(res, "Email tidak terdaftar di sistem Monda Kitchen")
+
+  const forgotPassToken = nanoid(10)
+  try {
+    await userModule.updateForgotPassToken(checkEmail.id, forgotPassToken)
+    await forgotPass(checkEmail.email, forgotPassToken)
+    return response.res200(res, "000", "Sukses mengirim akses ganti password ke email user")
+  } catch (error) {
+    console.error(error)
+    return response.res400(res, error.message)
+  }
+}
+
+exports.changePassword = async (req, res, next) => {
+  if (!req.body.forgot_pass_token) return response.res400(res, "Token forgot pass is missing.")
+  if (!req.body.password) return response.res400(res, "Password harus terisi.")
+  if (!req.body.confPassword) return response.res400(res, "Konfirmasi Password harus terisi.")
+
+  if (req.body.password.length < 6) return response.res400(res, "Password harus berisi 6 karakter atau lebih.")
+  if (req.body.password !== req.body.confPassword) return response.res400(res, "Password dan Confirm Password tidak cocok.")
+
+  const checkToken = await userModule.getTokenForgotPass(req.body.forgot_pass_token)
+  if (!checkToken) return response.res400(res, "Gagal ganti password, silahkan hubungi CS.")
+
+  const salt = await bcrypt.genSalt();
+  const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+  try {
+    const res = await userModule.changePassword(checkToken.id, hashPassword)
+    return response.res200(res, "000", "Sukses ganti password. Silahkan kembali ke halaman login")
+  } catch (error) {
+    console.error(error)
+    return response.res400(res, error.message)
   }
 }
 

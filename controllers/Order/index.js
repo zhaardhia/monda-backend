@@ -53,9 +53,9 @@ exports.orderProduct = async (req, res, next) => {
       gross_amount: recapShopSession.total_amount,
       address: recapShopSession.delivery_location,
       courier: orderCourier.name,
-      status_order: "waiting_charge_callback",
+      status_order: "not_paid",
       delivery_fee: orderCourier.fee,
-      transfer_fee: 5000, // HARDCODED,
+      transfer_fee: 4000, // HARDCODED,
       created_date: new Date(),
       updated_date: new Date()
     }
@@ -81,7 +81,7 @@ exports.orderProduct = async (req, res, next) => {
       payment_type: payload.payment_type,
       transaction_details: {
         order_id: orderId,
-        gross_amount: recapShopSession.total_amount + orderCourier.fee
+        gross_amount: recapShopSession.total_amount + orderCourier.fee + 4000
       },
       bank_transfer:{
         bank: payload.provider
@@ -161,7 +161,7 @@ exports.doneOrder = async (req, res, next) => {
 exports.userListOrder = async (req, res, next) => {
   if (!req.query.user_id) return response.res400(res, "user_id required.")
   const status_order = req.query.status_order;
-  const orderBy = [req.query.order, req.query.orderType ?? "DESC"]
+  const orderBy = [req.query.order, req.query.orderType ? req.query.orderType : "DESC"]
 
   const resListOrder = await orderModule.getListOrderByUserId(req.query.user_id, status_order, orderBy)
 

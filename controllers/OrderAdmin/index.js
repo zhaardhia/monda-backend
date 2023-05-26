@@ -19,40 +19,40 @@ exports.getLatestTransaction = async (req, res, next) => {
 }
 
 exports.getThisMonthsIncome = async (req, res, next) => {
-  const resTransaction = await orderAdminModule.getThisMonthsIncome(moment().subtract(30, 'days'), moment(new Date()).subtract(0, 'days'))
+  const resTransaction = await orderAdminModule.getThisMonthsIncome(moment().subtract(30, 'days').tz('Asia/Jakarta'), moment(new Date()).subtract(0, 'days').tz('Asia/Jakarta'))
   console.log("TANGGALL:", moment(new Date()).subtract(1, 'months'), new Date())
   console.log(resTransaction, " WKKWKWKW")
-
+  console.log({ arggg: moment(new Date()).subtract(0, 'days').tz('Asia/Jakarta')})
   if (resTransaction.length < 1) return response.res400(res, "Transaksi tidak ditemukan")
 
   const filter1to5 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(29, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(25, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(data.created_date).getTime() >= new Date(moment().subtract(29, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(data.created_date).getTime() <= new Date(moment().subtract(25, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   const filter6to10 = resTransaction.filter((data) => {
-    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(24, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(20, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(24, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(20, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   const filter11to15 = resTransaction.filter((data) => {
-    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(19, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(15, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(19, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(15, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   const filter16to20 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(14, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(10, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(data.created_date).getTime() >= new Date(moment().subtract(14, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(data.created_date).getTime() <= new Date(moment().subtract(10, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   const filter21to25 = resTransaction.filter((data) => {
-    return new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(9, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(data.created_date).getTime() <= new Date(moment().subtract(5, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() >= new Date(moment().subtract(9, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(data.created_date).getTime() <= new Date(moment().subtract(5, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   const filter26to30 = resTransaction.filter((data) => {
-    return new Date(data.created_date).getTime() >= new Date(moment().subtract(4, 'days').format("YYYY-MM-DD")).getTime() 
-      && new Date(moment(data.created_date).format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(0, 'days').format("YYYY-MM-DD")).getTime()
+    return new Date(data.created_date).getTime() >= new Date(moment().subtract(4, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() 
+      && new Date(moment(data.created_date).tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime() <= new Date(moment().subtract(0, 'days').tz('Asia/Jakarta').format("YYYY-MM-DD")).getTime()
   })
 
   console.log({filter21to25}, {filter26to30})
@@ -63,48 +63,48 @@ exports.getThisMonthsIncome = async (req, res, next) => {
       amount: filter1to5.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(29, 'days').format("DD MMMM"),
-      to: moment().subtract(25, 'days').format("DD MMMM"),
+      from: moment().subtract(29, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().subtract(25, 'days').tz('Asia/Jakarta').format("DD MMMM"),
     },
     {
       periode: "6 - 10",
       amount: filter6to10.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(24, 'days').format("DD MMMM"),
-      to: moment().subtract(20, 'days').format("DD MMMM"),
+      from: moment().subtract(24, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().subtract(20, 'days').tz('Asia/Jakarta').format("DD MMMM"),
     },
     {
       periode: "11 - 15",
       amount: filter11to15.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(19, 'days').format("DD MMMM"),
-      to: moment().subtract(15, 'days').format("DD MMMM"),
+      from: moment().subtract(19, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().subtract(15, 'days').tz('Asia/Jakarta').format("DD MMMM"),
     },
     {
       periode: "16 - 20",
       amount: filter16to20.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(14, 'days').format("DD MMMM"),
-      to: moment().subtract(10, 'days').format("DD MMMM"),
+      from: moment().subtract(14, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().subtract(10, 'days').tz('Asia/Jakarta').format("DD MMMM"),
     },
     {
       periode: "21 - 25",
       amount: filter21to25.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(9, 'days').format("DD MMMM"),
-      to: moment().subtract(5, 'days').format("DD MMMM"),
+      from: moment().subtract(9, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().subtract(5, 'days').tz('Asia/Jakarta').format("DD MMMM"),
     },
     {
       periode: "26 - 30",
       amount: filter26to30.reduce((accumulator, object) => {
         return accumulator + +object.gross_amount;
       }, 0),
-      from: moment().subtract(4, 'days').format("DD MMMM"),
-      to: moment().format("DD MMMM"),
+      from: moment().subtract(4, 'days').tz('Asia/Jakarta').format("DD MMMM"),
+      to: moment().tz('Asia/Jakarta').format("DD MMMM"),
     },
   ]
   return response.res200(res, "000", "Sukses mengambil data transaksi user", responseData)
@@ -128,10 +128,10 @@ exports.userOrderDetail = async (req, res, next) => {
 
 exports.getListOrder = async (req, res, next) => {
   const status_order = req.query.status_order;
-  const orderBy = [req.query.order, req.query.orderType ?? "DESC"]
+  const orderBy = [req.query.order, req.query.orderType ? req.query.orderType : "DESC"]
 
   const resOrder = await orderAdminModule.getListOrder(status_order, orderBy)
-  if (resOrder.length < 1) return response.res400(res, "Belum ada transaksi masuk")
+  if (resOrder.length < 1) return response.res200(res, "001", "Belum ada transaksi masuk", [])
   return response.res200(res, "000", "Sukses mengambil data semua transaksi.", resOrder)
 }
 

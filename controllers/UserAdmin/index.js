@@ -63,11 +63,11 @@ exports.loginAdmin = async (req, res, next) => {
   if (!payload.password) return response.res400(res, "Password harus diisi.")
   
   const user = await userAdminModule.getUserByEmail(payload.email);
-  if (!user) return response.res200(res, "001", "Email tidak ditemukan.");
+  if (!user) return response.res400(res, "Email tidak ditemukan.");
   if (user.role !== 0) return response.res401(res);
 
   const match = await bcrypt.compare(payload.password, user.password)
-  if (!match) return response.res200(res, "001", "Password salah.")
+  if (!match) return response.res400(res, "Password salah.")
 
   const userId = user.id
   const name = user.fullname

@@ -66,6 +66,20 @@ router.route("/logout-user")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+router.route("/forgot-password")
+  .post((req, res, next) => {
+    userController.sendEmailAddressForgotPass(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+router.route("/change-password")
+  .post((req, res, next) => {
+    userController.changePassword(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 

@@ -52,11 +52,49 @@ exports.getUserByEmail = async (email) => {
 exports.updateRefreshToken = async (userId, refresh_token) => {
   return user.update(
     {
-      refresh_token
+      refresh_token,
+      forgot_pass_token: null
     },
     {
       where: {
         id: userId
+      }
+    }
+  )
+}
+
+exports.updateForgotPassToken = async (userId, forgot_pass_token) => {
+  return user.update(
+    {
+      forgot_pass_token
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getTokenForgotPass = async (forgot_pass_token) => {
+  return user.findOne({
+    raw: true,
+    where: {
+      forgot_pass_token
+    },
+    attributes: ["id", "email", "forgot_pass_token"]
+  })
+}
+
+exports.changePassword = async (id, password) => {
+  return user.update(
+    {
+      password,
+      forgot_pass_token: null
+    },
+    {
+      where: {
+        id
       }
     }
   )

@@ -58,6 +58,10 @@ module.exports = function(sequelize, DataTypes) {
     refresh_token: {
       type: DataTypes.STRING(1000),
       allowNull: true
+    },
+    forgot_pass_token: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,
