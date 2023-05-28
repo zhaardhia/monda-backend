@@ -26,6 +26,8 @@ const courier = require("../models/courier");
 const order = require("../models/order");
 const order_item = require("../models/order_item");
 const payment_order = require("../models/payment_order");
+const scheduler_belanja = require("../models/scheduler_belanja");
+const scheduler_belanja_item = require("../models/scheduler_belanja_item");
 
 module.exports = {
   user: user(db, DataTypes),
@@ -36,5 +38,7 @@ module.exports = {
   order: order(db, DataTypes),
   order_item: order_item(db, DataTypes),
   payment_order: payment_order(db, DataTypes),
+  scheduler_belanja: scheduler_belanja(db, DataTypes),
+  scheduler_belanja_item: scheduler_belanja_item(db, DataTypes),
   db,
 };

@@ -1,36 +1,27 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('product', {
+  return sequelize.define('scheduler_belanja', {
     id: {
       type: DataTypes.STRING(255),
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    user_id: {
       type: DataTypes.STRING(255),
       allowNull: false
-    },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    stock: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING(1000),
-      allowNull: false
-    },
-    image: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     },
     status: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 1,
-      comment: "0: INACTIVE, 1 ACTIVE"
+      comment: "0: NOT_ACTIVE, 1: ACTIVE"
+    },
+    date: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    hour: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
     created_date: {
       type: DataTypes.DATE,
@@ -42,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'product',
+    tableName: 'scheduler_belanja',
     timestamps: false,
     indexes: [
       {

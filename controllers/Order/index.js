@@ -164,7 +164,7 @@ exports.userListOrder = async (req, res, next) => {
   const orderBy = [req.query.order, req.query.orderType ? req.query.orderType : "DESC"]
 
   const resListOrder = await orderModule.getListOrderByUserId(req.query.user_id, status_order, orderBy)
-
+  console.log({resListOrder})
   if (resListOrder.length < 1) return response.res200(res, "001", "Order masih kosong.")
   return response.res200(res, "000", "Sukses mengembalikan data list order", resListOrder)
 }
@@ -175,7 +175,7 @@ exports.userOrderDetail = async (req, res, next) => {
   const resOrder = await orderModule.getOrderByUserId(req.query.order_id)
 
   if (!resOrder) return response.res200(res, "001", "Order masih kosong.")
-
+  console.log({resOrder})
   const resOrderDetail = await orderModule.getOrderDetailByOrderId(req.query.order_id)
   const responseOrderDetail = {
     ...resOrder,
@@ -184,3 +184,6 @@ exports.userOrderDetail = async (req, res, next) => {
 
   return response.res200(res, "000", "Sukses mengembalikan data list order", responseOrderDetail)
 }
+
+
+// {"status_code":"201","status_message":"Success, Bank Transfer transaction is created","transaction_id":"16dfea06-b8dd-4fec-933c-7836d92dd222","order_id":"-azUWSM49gEfoVerFgN5","merchant_id":"G353320930","gross_amount":"213000.00","currency":"IDR","payment_type":"bank_transfer","transaction_time":"2023-05-28 16:15:01","transaction_status":"pending","fraud_status":"accept","va_numbers":[{"bank":"bca","va_number":"20930679745"}],"expiry_time":"2023-05-29 16:15:01"}

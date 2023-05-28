@@ -22,7 +22,8 @@ router.use("/order", require("./order"));
 router.use("/payment", require("./payment"));
 router.use("/courier", require("./courier"));
 router.use("/email", require("./email"));
-
+router.use("/cron-belanja-bulanan", require("./cronBelanjaBulanan"))
+router.use("/belanja-bulanan", require("./belanjaBulanan"))
 router.all('*', index);
 
 module.exports = router;

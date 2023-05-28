@@ -131,3 +131,21 @@ exports.updateProduct = async (req, res, next) => {
     return response.res200(res, "001", "Terjadi kesalahan ketika insert database.")
   }
 }
+
+// exports.softDeleteProduct = async (req, res, next) => {
+//   if (!req.body.product_id) return response.res400(res, "product id is required")
+//   const dbTransaction = await db.transaction()
+//   const payloadUpdate = {
+//     status: 0,
+//     updated_date: new Date()
+//   }
+//   try {
+//     await productModule.updateProduct(dbTransaction, payloadUpdate, req.body.product_id)
+//     dbTransaction.commit()
+//     return response.res200(res, "000", "Sukses hapus produk.")
+//   } catch (error) {
+//     console.error(error)
+//     dbTransaction.rollback()
+//     return response.res400(res, "Terjadi kesalahan ketika mengubah data pada database.")
+//   }
+// }

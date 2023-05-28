@@ -3,12 +3,13 @@
 const response = require("../../components/response")
 // const productModule = require("./product.module")
 // const shoppingCartModule = require("../ShoppingCart/shoppingCart.module")
-const { db, payment_order, order } = require("../../components/database")
+const { db, payment_order, order, order_item, product } = require("../../components/database")
 const bcrypt = require("bcrypt")
 const crypto = require('crypto');
 const { nanoid } = require('nanoid');
 const jwt = require("jsonwebtoken")
 const midtransClient = require('midtrans-client');
+const moment = require("moment")
 
 // Create Core API instance
 const coreApi = new midtransClient.CoreApi({
@@ -33,9 +34,9 @@ exports.chargePayment = async (req, res, next) => {
           status: chargeResponse.transaction_status,
           response_midtrans: JSON.stringify(chargeResponse),
           va_number: chargeResponse.va_numbers[0].va_number,
-          expiry_time: chargeResponse.expiry_time,
-          created_date: chargeResponse.transaction_time,
-          updated_date: chargeResponse.transaction_time
+          expiry_time: moment(chargeResponse.expiry_time).utc().format('YYYY-MM-DD HH:mm:ss'),
+          created_date: moment(chargeResponse.transaction_time).utc().format('YYYY-MM-DD HH:mm:ss'),
+          updated_date: moment(chargeResponse.transaction_time).utc().format('YYYY-MM-DD HH:mm:ss'),
         }
         await payment_order.create(payloadPaymentCreated)
         await order.update(
@@ -100,9 +101,9 @@ exports.callbackNotificationPayment = async (req, res, next) => {
           status: statusResponse.transaction_status,
           response_midtrans: JSON.stringify(statusResponse),
           va_number: statusResponse.va_numbers[0].va_number,
-          expiry_time: statusResponse.expiry_time,
-          created_date: statusResponse.transaction_time,
-          updated_date: statusResponse.transaction_time
+          expiry_time: moment(statusResponse.expiry_time).utc().format('YYYY-MM-DD HH:mm:ss'),
+          created_date: moment(statusResponse.transaction_time).utc().format('YYYY-MM-DD HH:mm:ss'),
+          updated_date: moment(statusResponse.transaction_time).utc().format('YYYY-MM-DD HH:mm:ss'),
         }
         await payment_order.create(payloadPaymentCreated)
 
@@ -146,6 +147,22 @@ exports.callbackNotificationPayment = async (req, res, next) => {
         )
         return response.res200(res, "000", "Success handle Payment")
       } else if (transactionStatus == 'cancel' || transactionStatus == 'expire'){
+        const productAssociate = order_item.hasOne(product, {foreignKey: "id", sourceKey: "product_id"})
+        const resOrderItem = await order_item.findAll({
+          raw: true,
+          include: [
+            {
+              association: productAssociate,
+              required: false,
+              attributes: ["id", "stock"]
+            }
+          ],
+          where: {
+            order_id: statusResponse.order_id
+          },
+          attributes: ["id", "order_id", "product_id", "quantity"]
+        })
+
         await payment_order.update(
           {
             status: transactionStatus,
@@ -170,6 +187,20 @@ exports.callbackNotificationPayment = async (req, res, next) => {
             }
           }
         )
+        if (process.env.THIS_SERVICE_HOST.includes("mondakitchen.com")) {
+          for (const iterator of resOrderItem) {
+            await product.update(
+              {
+                stock: iterator["product.stock"] + iterator.quantity
+              },
+              {
+                where: {
+                  id: iterator.product_id
+                }
+              }
+            )
+          }
+        }
         return response.res200(res, "000", "Success cancel / expire Payment")
       }
   })
@@ -283,6 +314,21 @@ exports.cancelPayment = async (req, res, next) => {
           }
         )
       } else if (transactionStatus == 'cancel' || transactionStatus == 'expire'){
+        const productAssociate = order_item.hasOne(product, {foreignKey: "id", sourceKey: "product_id"})
+        const resOrderItem = await order_item.findAll({
+          raw: true,
+          include: [
+            {
+              association: productAssociate,
+              required: false,
+              attributes: ["id", "stock"]
+            }
+          ],
+          where: {
+            order_id: statusResponse.order_id
+          },
+          attributes: ["id", "order_id", "product_id", "quantity"]
+        })
         await order.update(
           {
             status_order: `${transactionStatus}_payment`,   //  possible: cancel_payment || expire_payment
@@ -294,6 +340,20 @@ exports.cancelPayment = async (req, res, next) => {
             }
           }
         )
+        if (process.env.THIS_SERVICE_HOST.includes("127.0.0.1")) {
+          for (const iterator of resOrderItem) {
+            await product.update(
+              {
+                stock: iterator["product.stock"] + iterator.quantity
+              },
+              {
+                where: {
+                  id: iterator.product_id
+                }
+              }
+            )
+          }
+        }
       }
       
       return response.res200(res, statusResponse.status_code, "Sukses membatalkan transaksi.", statusResponse)
@@ -307,13 +367,15 @@ exports.cancelPayment = async (req, res, next) => {
 exports.getPaymentOrderById = async (req, res, next) => {
   if (!req.query.order_id) return response.res400(res, "order_id required.")
 
-  const resPaymentOrder = await payment_order.findOne({
+  let resPaymentOrder = await payment_order.findOne({
     raw: true,
     where: {
       order_id: req.query.order_id
     },
     attributes: ["id", "order_id", "amount", "payment_type", "provider", "status", "va_number", "expiry_time", "updated_date"]
   })
+  resPaymentOrder.expiry_time = moment(resPaymentOrder.expiry_time).format("LLL")
   if (!resPaymentOrder) response.res200(res, "001", "Payment order tidak ditemukan");
+  console.log({resPaymentOrder}, {expire: moment(resPaymentOrder.expiry_time).format("LLL")})
   return response.res200(res, "000", "Sukses mengambil data payment order", resPaymentOrder)
 }
