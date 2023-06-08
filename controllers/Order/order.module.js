@@ -185,7 +185,7 @@ exports.getOrderDetailByOrderId = async (order_id) => {
       {
         association: productAssociate,
         required: false,
-        attributes: ["id", "name"]
+        attributes: ["id", "name", "image"]
       }
     ],
     where: {
