@@ -126,8 +126,8 @@ exports.changePassword = async (req, res, next) => {
   const hashPassword = await bcrypt.hash(req.body.password, salt);
 
   try {
-    const res = await userModule.changePassword(checkToken.id, hashPassword)
-    return response.res200(res, "000", "Sukses ganti password. Silahkan kembali ke halaman login")
+    const resChangePassword = await userModule.changePassword(checkToken.id, hashPassword)
+    return response.res200(res, "000", "Sukses ganti password. Silahkan kembali ke halaman login", resChangePassword)
   } catch (error) {
     console.error(error)
     return response.res400(res, error.message)

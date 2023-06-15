@@ -103,14 +103,14 @@ exports.insertProduct = async (req, res, next) => {
 }
 
 exports.updateProduct = async (req, res, next) => {
-  if (!req.file) return response.res400(res, "Image harus diupload.")
+  // if (!req.file) return response.res400(res, "Image harus diupload.")
 
   let payload = {
     name: req.body.name,
     price: +req.body.price,
     stock: +req.body.stock,
     description: req.body.description,
-    image: req.file.path
+    ...(req.file && { image: req.file.path })
   }
   if (!req.body.id) return response.res400(res, "ID produk harus diisi.")
   if (!payload.name) return response.res400(res, "Nama produk harus diisi.")
